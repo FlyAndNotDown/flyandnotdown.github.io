@@ -1,0 +1,134 @@
+---
+title: "UnrealEngine4 源码剖析 (一) UObject 概览及反射系统"
+description: "UObject 是 Unreal Runtime 的核心，其负责了三大功能：反射、序列化、GC，本篇着墨讲解 UObject 和反射系统。"
+date: "2021-02-10"
+slug: "33"
+categories:
+    - 技术
+tags:
+    - Unreal
+    - Game
+    - Graphics
+---
+
+# 1 自省、反射
+
+我们先来看一下 Java 中的反射机制定义：
+
+> Java 反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意方法和属性。
+
+定义的前半句即自省，而后半句即反射。使用 UE4 的朋友应该大多数都是 C++ 开发者，但是如果大家使用过一些 C++ 之外的现代语言，就会明白自省和反射的重要性。
+
+自省与反射的用途非常广泛，比如很多语言（如 Python）的命令行脚本解释器、对象的自动序列化（通过自省遍历属性并依次序列化）、QT 的信号槽等，都是基于自省与反射实现的。
+
+仔细想一想，其实要实现语言层面的自省与反射，是很简单的，只需要在编译字节码 / 二进制的时候额外写入类、属性、方法的类型信息即可。但是 C++ 由于年龄实在太大，在设计之初并没有考虑如此基础的功能，以至于到现在为止，C++ 也没在标准中提供自省与反射的语言支持。
+
+但是人们的智慧是无穷无尽的，很多使用 C++ 构建的软件都会选择自己实现一套反射系统。目前已知的套路有两种：
+
+1. 手动注册类型信息
+2. 预编译器生成类型信息
+
+手动注册类型信息就显得很简单粗暴了，这里有一个有名的库，叫做 [rttr](https://github.com/rttrorg/rttr)，上一段代码，你就秒懂他的原理了：
+
+```cpp
+#include <rttr/registration>
+using namespace rttr;
+
+struct MyStruct {
+    MyStruct() {};
+    
+    void func(double) {};
+    int data;
+};
+
+RTTR_REGISTRATION
+{
+    registration::class_<MyStruct>("MyStruct")
+         .constructor<>()
+         .property("data", &MyStruct::data)
+         .method("func", &MyStruct::func);
+}
+```
+
+这里使用 rttr 库注册了一个名为 MyStruct 的结构体，代码很简单，就是在一个静态块中手动注册了 MyStruct 的属性与方法。在完成注册之后，就可以开始经典的反射操作了，如遍历属性：
+
+```cpp
+type t = type::get<MyStruct>();
+for (auto& prop : t.get_properties())
+    std::cout << "name: " << prop.get_name();
+
+for (auto& meth : t.get_methods())
+    std::cout << "name: " << meth.get_name();
+```
+
+这种方法相当简单，但是问题也很明显，设想如果我写了一个类但是忘了写注册代码，岂不是裂开？另外，我也不能改一下类定义又立马去比对差异然后把类型信息也加上吧。所以相比于上面这种原始而粗暴的方法，**预编译器** 生成类型信息往往更得到大项目的青睐。
+
+著名的 C++ 跨平台 GUI 框架 QT 使用的则是这种方法，先看一段 QT 的代码：
+
+```cpp
+class SampleWidget : QWidget 
+{
+    Q_OBJECT
+    ...
+}
+```
+
+QT 有一个自己的预编译器，叫做 MOC，在源码输入编译器之前，会先经过 `MOC` 处理一遍，`Q_OBJECT` 是一个空宏，它的作用很简单，就是告诉 MOC 分析头文件中的类、属性、方法的类型信息，然后生成对应的宏展开，再把这些额外生成的宏展开一起丢进编译器编译，最后全自动生成类型信息，这样就可以使用反射系统了，具体的原理大家可以自己去了解一下。
+
+当然 UE4 使用的也是预编译器生成类型信息的方案，UE4 的预编译叫 UHT (Unreal Header Tool)，我们后面会做一期专题详细聊聊它。读 UObject 的源码，了解到这里就够了。
+
+# 2. UObject
+
+在 UE4 中，所有游戏线程的对象都会继承自 `UObject` 类，`UObject` 类提供了三大功能：
+
+1. 自省与反射
+2. GC
+3. 序列化
+
+序列化和 GC 我会在下一节中统一分析，本篇将着墨讲自省反射。
+
+`UObject` 的代码在 /Source/Runtime/CoreUObject/Public/UObject/UObject.h，先来看看 UObject 的继承关系：
+
+![UObject Class](52.png)
+
+其中，`UObjectBase` 提供了四个核心属性：
+
+* `InternalIndex`：对象在全局表中的唯一索引
+* `ClassPrivate`：对象的 UClass 类型
+* `NamePrivate`：对象名，也是全局唯一
+* `OuterPrivate`：对象所属的 Outer 对象，即对象所在的 UPackage
+
+`UObjectBaseUtility` 没有额外属性，提供了一系列引擎内部使用的方法，我们不必太关心。
+
+`UObject` 扩展出了一些生命周期方法，以及最重要的序列化方法 `Serialize()`，调用 `UObject#Serialize()` 即可完成对象的序列化或反序列化。
+
+另外全局对象表代码在 /Source/Runtime/CoreUObject/Private/UObject/UObjectHash.cpp，进入文件我们可以找到两个关键类：
+
+* `FUObjectArray`
+* `FUObjectHashTables`
+
+可以理解 `FUObjectArray` 是一个全局指针数组，存储了所有使用 `NewObject` 创建的对象。而 `FUObjectHashTables` 记录了对象间的各种关系，在 GC 销毁对象时，会释放 `FUObjectArray` 中的内存和 `FUObjectHashTables` 的对象关系。
+
+# 3. UField、类型系统及反射
+
+想要实现反射，一套用于描述类型的数据结构是必不可少的，UE4 中当然也定义了这么一套类型系统用于描述 C++ 的所有类型。
+
+UE4 的类型数据结构统一继承自 `UField`，由于代码比较多，我们先看一下整体的类图：
+
+![UField](53.png)
+
+上来第一眼，大家可能好奇的是为什么 `UField` 要继承自 `UObject`，这里可以参考一下 Java 的 `Class` 也是继承自 `Object` 的，之前也说了 `UObject` 除了反射，还提供了序列化和 GC 两大功能，让 `UField` 继承自 `UObject` 则可以直接让类型系统的类也享受到这两个功能。
+
+接下来我们说说 `UField` 的子类都是做什么的：
+
+1. `UProperty`: 表示 C++ 中的属性，即类或结构体的成员变量。
+2. `UEnum`: 表示 C++ 中的枚举，内部保存了一个 `TMap`，维护了 Name、Value、Index 三大信息的对应关系，联想一下 C++ 的枚举就能明白。
+3. `UStruct`: 表示 C++ 中的复杂类型，包含函数、类、结构体三种。内部维护了所表示类型的所有 `UProperty`。
+4. `UFunction`: 表示 C++ 中的函数，内部维护了函数指针、栈帧、参数返回值信息，还提供了反射执行所表示函数的方法。
+5. `UClass`：表示 C++ 中的类，在 `UStruct` 的基础上扩展了 `UFunction` 的保存与查找方法。
+6. `UScriptStruct`: 表示 C++ 中的结构体，只是在 `UStruct` 的基础上增加了一些工具方法而已。
+
+结合我提供的类图和说明，就能大致了解到类型系统的全貌了。这里要注意的一点是 `UStruct` 并不代表 C++ 中得到结构体，而是代表复杂类型，更坑爹的是 `UFunction` 居然继承自 `UStruct`。我理解的是 `UFunction` 复用 `UStruct` 中的 `UProperty` 信息的方式是把自己的参数作为属性来保存，我认为 UE4 完全可以把 `UStruct` 改成 `UPolymer (聚合类型)` 或者 `UComplexType (复杂类型)`，然后把 `UScriptStruct` 改成 `UStruct`。但是估计这其中有一些历史原因吧。
+
+到这里为止，其实大家就能明白类型系统是如何支撑反射系统工作的了，对于任意一个 `UObject`，我都可以拿到它所对应的 `UClass`，而 `UClass` 又可以拿到任意 `UProperty`、`UFunction`。而反过来说，我反序列化之后拿到类型信息，对于任意一段内存，都可以取得想要的属性、调用想要的方法。这就是 UE4 反射系统的原理。
+

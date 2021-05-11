@@ -1,0 +1,29 @@
+---
+title: "git push 每次都要输入登录凭据的解决方法"
+description: "git 的认证形式用两种，一种是邮箱 + 密码，另外一种是使用 ssh 秘钥，对于使用邮箱 + 密码的用户来说，每一次 git push 都需要输入密码是一个很让人头疼的问题，使用 credential.helper 可以帮助用户记住这些信息从而避免反复输入。"
+date: "2018-04-07"
+slug: "2"
+categories:
+    - 技术
+tags:
+    - Git
+    - Tips
+---
+
+# 🤔 问题
+每一次使用 `git push` 命令都需要重新输入一次用户名和密码，这是一个很烦人的小问题。`Google` 之，找到了解决办法。
+
+# 🍗 解决办法
+在 `git bash` 中输入：
+
+```
+git config --global credential.helper store
+```
+
+下一次你再在你的项目中使用
+
+```
+git push
+```
+
+命令的时候，你的登录凭据将会被记住，这样就不用每次push都重新输入一次用户名和密码了。

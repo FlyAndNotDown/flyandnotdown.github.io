@@ -1,4 +1,0 @@
-baseURL = "https://www.kindem.xyz/"
-languageCode = "zh-cn"
-title = "Kindem的博客"
-theme = "hugo-theme-stack"
