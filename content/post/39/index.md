@@ -86,6 +86,62 @@ class Child2 : public Base<Child2> {}
 
 解决办法是什么呢，很简单，就是再加一个方法，把它的入参也变成模板，然后在入参处加上限定符，完成类似 Concept 的概念，这就是我说的模板的传染性，**一旦你采用模板来构建你的代码，那么你就要做好从头到尾都使用模板的准备**。
 
+其实这一特点单单影响方法还好，模板方法不嫌多，但是如果我想要使用静态多态实现的类有多层继承关系呢？看看下面这段代码：
+
+```cpp
+#include <iostream>
+
+template <class T>
+class Base {
+public:
+    void Foo()
+    {
+        static_cast<T*>(this)->FooImpl1();
+    }
+};
+
+template <class T>
+class Middle : public Base<Middle<T>> {
+public:
+    void FooImpl1()
+    {
+        static_cast<T*>(this)->FooImpl2();
+    }
+};
+
+class Child1 : public Middle<Child1> {
+public:
+    void FooImpl2()
+    {
+        std::cout << "hello1" << std::endl;
+    }
+};
+
+class Child2 : public Middle<Child2> {
+public:
+    void FooImpl2()
+    {
+        std::cout << "hello2" << std::endl;
+    }
+};
+
+template <class T>
+void Print(Base<Middle<T>>& obj)
+{
+    obj.Foo();
+}
+
+int main(int argc, char* argv[])
+{
+    Child1 child1;
+    Child2 child2;
+    Print(child1);
+    Print(child2);
+}
+```
+
+我 TM 打个 hello 都嵌套两层模板了 ...... 我为什么不用虚函数表呢？
+
 # 总结
 
-模板很好，是 C++ 元编程的基石，在写基础库的时候非常实用，而且让编译期打工能大大减少运行时开销，但是模板的传染性是一个大问题，类型的缺失会不断传染，在设计时需要提前考虑。
+模板很好，是 C++ 元编程的基石，在写基础库的时候非常实用，而且让编译期打工能大大减少运行时开销，但是模板的传染性是一个大问题，类型的缺失会不断传染，在设计时需要提前考虑，在合适的场景使用合适的设计。
