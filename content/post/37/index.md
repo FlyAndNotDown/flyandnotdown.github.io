@@ -50,7 +50,10 @@ RHI 是写引擎绕不开的巨坑，时常想吐槽这么多 API，你们相互
 * Texture
 * RenderPass
 * FrameBuffer
-* Pipeline
+* GraphicsPipeline
+* ComputePipeline
+* DescriptorPool
+* DescriptorSet
 * GpuBuffer
 * CommandBuffer
 * CommandEncoder
