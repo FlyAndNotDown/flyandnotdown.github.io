@@ -108,6 +108,26 @@ exp_add_test(
 
 抛开这些，我总算是决定先把 VulkanDriver 拆分出来了，抽象了一套公共的 Driver 接口，用于以后实现 DX12 和 Metal 后端，我很庆幸先做了这件事，不然后面改起来估计更蛋疼。
 
+目前封装的类有：
+
+* Driver
+* Device
+* CommandBuffer
+* Buffer
+* Texture
+* Image
+* ImageView
+* FrameBuffer
+* SwapChain
+* RenderPass
+* GraphicsPipeline
+* ComputePipeline
+* DescriptorPool
+* DescriptorSet
+* Signal
+
+封装粒度还是相对比较细的，之后准备通过脚本 / 插件的形式将 RHI 和 RPI 一起提供出去，为用户自己造 Renderer 提供可能性（咱们之后的 DefaultRenderer 本身就会作为一个插件提供）。
+
 RHI 要走的路还很长，不过我打算小步快跑，先用 VulkanDriver 顶着，慢慢把上面的代码也写起来，让其他团队成员也能快速地参与进来。
 
 ## RPI / FrameGraph
@@ -116,13 +136,179 @@ RPI / FrameGraph 主要由 [bluesky013](https://github.com/bluesky013) 操刀，
 
 我们设计的蓝本就是这个 Talk，目前逻辑差不多写完了，不过 AsyncComputePass 和 TransitionResources 处理上还有点小问题。
 
+<!-- TODO -->
+
 # 思考
 
-## RHI 到底是个什么角色
+## 反射系统搭建
 
-## 通用渲染管线初步
+我很喜欢拿反射系统说事，之前也写过 [对反射系统的剖析](../33)，不过那是针对 UnrealEngine 的。反射系统在游戏引擎中最大的作用，无非就两个：
 
-## ECS 与脚本系统初步
+* 自动序列化
+* 脚本符号注册
 
-## 插件系统初步
+我们目前准备使用 [rttr](https://github.com/rttrorg/rttr) 或者 [meta](https://github.com/skypjack/meta)，rttr 应该不说我多说了，老牌反射框架了，meta 是 entt 内置的反射框架，作者 skypjack 觉得市面上没什么好的反射框架然后自己写的。其实从工程建设角度看我更认可 meta 一些，但是 meta 提供的接口实在是不好用：
 
+```cpp
+std::hash<std::string_view> hash{};
+
+meta::reflect<my_type>(hash("reflected"))
+    .data<&my_type::static_variable>(hash("static"))
+    .data<&my_type::data_member>(hash("member"))
+    .data<&global_variable>(hash("global"));
+```
+
+他这里的写法非常巧妙，用地址（地址本身也是一个 uint32_t 或者 uint64_t）来作为模板参数，我第一开始愣是没看懂这写法，不过仔细读一读还好，相当于一口气完成了地址与类型的双重注册，不过我想诟病的地方在于作者为了追求极限性能，连 identity 参数都用了 hash + string_view，就离谱 ......
+
+如果我们最终使用 meta 的话，还是要再封装一层。rttr 的话，接口是比较好用的，但我接受不了的是 rttr 的工程竟然用 cmake 去检查 README 和 LICENSE 符不符合它的要求 ......
+
+具体使用哪个写到反射系统的时候再挑选吧，实在不行自己写一个也不是什么麻烦事，**我是比较倾向于静态反射的**，而 UE 的反射系统是动态反射，实现起来还稍微有些区别，性能上也要差一截，优点就是**动态反射对脚本很友好**，我在下面一小节会详细说这个事情。
+
+## 脚本如何与 ECS 融合呢？
+
+其实我早就说了，引擎本身按照 ECS 逻辑编写并不代表脚本也要套 ECS。如果是从头到尾都用 ECS 的话，那么用户必须要接受的是改变以前写 GameObject 的风格，投入编写 Component 和 System 的怀抱。
+
+设想反射系统最后是用纯静态反射，ECS 也在 C++ 层开始构建，脚本完全 ECS 化，那么我们就避不开一个大问题 —— **“用户自定义的 Component 要怎么被下面 C++ 所感知到？”**
+
+假设用户在脚本里面定义了一个 Component 和一个 System：
+
+```javascript
+const helloComp = {
+    a: 1,
+    b: 2,
+    c: 3
+};
+
+const helloSystem = (registry, time) => {
+    // systen logic
+};
+```
+
+这里用户自定义的 HelloComp 对应的 C++ 的 Archetype 很明显是：
+
+```cpp
+struct HelloComp : public Comp {
+    int a;
+    int b;
+    int c;
+}
+```
+
+但不巧的是脚本是弱类型的，C++ 根本就没办法感知到类型好嘛？那实际上填充数据的时候，entt 可是需要这样的：
+
+```cpp
+entt::registry registry;
+
+const auto entity = registry.create();
+registry.emplace<HelloComp>(1, 2, 3);
+```
+
+这里的模板参数根本就没法填 ......
+
+我和 [bluesky013](https://github.com/bluesky013) 讨论后，我们一起得到一个可行的方案，就是用户将 Component 和 System 分开为两个文件编写，System 部分不动，Component 部分修改成下面这样：
+
+```javascript
+// hello.comp.js
+export const entry = (componentManager) => {
+    componentManager.define({
+        name: "Hello",
+        attrs: {
+            a: DataType.Int,
+            b: DataType.Int,
+            c: DataType.Int
+        }
+    });
+};
+```
+
+然后我们需要**经过一轮预编译**，我们的预编译器会执行所有的 .comp.js 文件，然后找到 entry 方法进行调用，执行完所有类型的注册之后，预编译期会从 componentManager 中取出所有的 Component 类型信息，生成一系列头文件和代码
+
+```cpp
+// hello.generated.h
+struct Hello : public Comp {
+    int a;
+    int b;
+    int c;
+}
+
+// hello.generated.cpp
+extern "C" {
+    void RegisterComp()
+    {
+        // 一些初始化的事情，会在库被加载时被自动执行
+    }
+}
+```
+
+这样就能让脚本系统里面定义的类型也被 C++ 感知到了，这个思路其实和 QT、UE 很想，只不过他们是对 C++ 进行元编译，我们是对脚本语言而已~
+
+## 脚本语言和引擎的选择
+
+我是狂热的 JavaScript 使用者，当然我们的脚本语言是 JavaScript 了。兜了一圈我看了很多小型嵌入式 JavaScript 引擎，不过说实话质量都一般般，转了一圈之后我还是准备把这个大家伙给带进来：[V8](https://v8.dev/)
+
+果真 V8 出来都没人敢做 JavaScript 引擎了，它的统治地位真没啥好说的 ......
+
+简单看了一下集成指南 —— [Getting started with embedding V8](https://v8.dev/docs/embed)，官方例子如下：
+
+```cpp
+// Copyright 2015 the V8 project authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "include/libplatform/libplatform.h"
+#include "include/v8.h"
+int main(int argc, char* argv[]) {
+  // Initialize V8.
+  v8::V8::InitializeICUDefaultLocation(argv[0]);
+  v8::V8::InitializeExternalStartupData(argv[0]);
+  std::unique_ptr<v8::Platform> platform = v8::platform::NewDefaultPlatform();
+  v8::V8::InitializePlatform(platform.get());
+  v8::V8::Initialize();
+  // Create a new Isolate and make it the current one.
+  v8::Isolate::CreateParams create_params;
+  create_params.array_buffer_allocator =
+      v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+  v8::Isolate* isolate = v8::Isolate::New(create_params);
+  {
+    v8::Isolate::Scope isolate_scope(isolate);
+    // Create a stack-allocated handle scope.
+    v8::HandleScope handle_scope(isolate);
+    // Create a new context.
+    v8::Local<v8::Context> context = v8::Context::New(isolate);
+    // Enter the context for compiling and running the hello world script.
+    v8::Context::Scope context_scope(context);
+    // Create a string containing the JavaScript source code.
+    v8::Local<v8::String> source =
+        v8::String::NewFromUtf8(isolate, "'Hello' + ', World!'",
+                                v8::NewStringType::kNormal)
+            .ToLocalChecked();
+    // Compile the source code.
+    v8::Local<v8::Script> script =
+        v8::Script::Compile(context, source).ToLocalChecked();
+    // Run the script to get the result.
+    v8::Local<v8::Value> result = script->Run(context).ToLocalChecked();
+    // Convert the result to an UTF8 string and print it.
+    v8::String::Utf8Value utf8(isolate, result);
+    printf("%s\n", *utf8);
+  }
+  // Dispose the isolate and tear down V8.
+  isolate->Dispose();
+  v8::V8::Dispose();
+  v8::V8::ShutdownPlatform();
+  delete create_params.array_buffer_allocator;
+  return 0;
+}
+```
+
+说实话其实和 Lua 差不多，应该难度不高，但还是要先试试，不知道这么大体量的怪物会不会有什么天坑 ......
+
+# 参考资料
+
+* [GDC Vault - FrameGraph](https://www.gdcvault.com/play/1024612/FrameGraph-Extensible-Rendering-Architecture-in)
+* [rttr](https://github.com/rttrorg/rttr)
+* [EnTT](https://github.com/skypjack/entt)
+* [meta](https://github.com/skypjack/meta)
+* [V8 JavaScript Engine](https://v8.dev/)
+* [Embedded V8 Sample](https://chromium.googlesource.com/v8/v8/+/branch-heads/6.8/samples/hello-world.cc)
