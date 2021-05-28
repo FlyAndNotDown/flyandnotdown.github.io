@@ -136,7 +136,27 @@ RPI / FrameGraph 主要由 [bluesky013](https://github.com/bluesky013) 操刀，
 
 我们设计的蓝本就是这个 Talk，目前逻辑差不多写完了，不过 AsyncComputePass 和 TransitionResources 处理上还有点小问题。
 
-<!-- TODO -->
+下面简单讲讲 FrameGraph：
+
+![FrameGraph Goals](7.png)
+
+FrameGraph 的目标很简单，就是用一种合理、可预测的方式去维护 Renderer 中繁重不堪的资源与 RenderPass 的依赖关系。从另外一种角度讲，FrameGraph 的作用是让渲染流程更清晰、可维护。下面是一个简单的例子：
+
+![FramGraph Example](8.png)
+
+黄色的节点是 RenderPass，蓝色的节点是资源，红色节点是送显，它很好地描述了一帧中资源和渲染流程的关系（但是要注意的是它并不维护具体的渲染任务，也就是它不管 Pipeline）。下面是几张资源和 RenderPass 的图：
+
+![FrameGraph Resources](9.png)
+
+![FrameGraph Examples](10.png)
+
+![FrameGraph SetUp](11.png)
+
+![FrameGraph RenderPass](12.png)
+
+资源这里就不多说了，可以自己看看原 Talk，主要是 RenderPass，RenderPass 一个结构体来描述输入输出的资源，用两个 Lambda 表达式来描述节点的 SetUp 和 Execute，这里的 Execute 实际上就是真正的绘制过程了，FrameGraph 和 RHI 就是在这里结合的。
+
+FrameGraph 是 RPI 的重要组成部分，可以说它是 Renderer 的骨架，而 RHI 则是 Renderer 的血肉，它俩配合可以为可编程渲染管线提供强大的支持。
 
 # 思考
 
