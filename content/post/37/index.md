@@ -47,7 +47,7 @@ RHI 是写引擎绕不开的巨坑，时常想吐槽这么多 API，你们相互
 * SwapChain
 * Image
 * ImageView
-* Texture
+* Sampler
 * RenderPass
 * FrameBuffer
 * GraphicsPipeline

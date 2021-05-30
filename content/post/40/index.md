@@ -114,7 +114,7 @@ exp_add_test(
 * Device
 * CommandBuffer
 * Buffer
-* Texture
+* Sampler
 * Image
 * ImageView
 * FrameBuffer
