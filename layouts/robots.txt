@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /categories/
+Disallow: /archives/
+Disallow: /tags/
+Sitemap: https://www.kindem.xyz/sitemap.xml
