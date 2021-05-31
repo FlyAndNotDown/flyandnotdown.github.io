@@ -9,6 +9,9 @@ tags:
     - JavaScript
     - Http
     - Ajax
+keywords:
+    - ajax
+    - javascript
 ---
 
 # 📦 封装举例

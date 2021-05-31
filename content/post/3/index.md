@@ -8,6 +8,9 @@ categories:
 tags:
     - Tips
     - Languages
+keywords:
+    - 编程语言
+    - lambda表达式
 ---
 
 # 🤔 什么是 lambda 表达式

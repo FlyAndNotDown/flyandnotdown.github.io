@@ -8,6 +8,11 @@ categories:
 tags:
     - JetBrains
     - License
+keywords:
+    - jetbrains
+    - license
+    - 激活
+    - 开源
 ---
 
 # 💡 背景

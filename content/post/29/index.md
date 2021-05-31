@@ -7,6 +7,11 @@ categories:
     - 技术
 tags:
     - Android
+keywords:
+    - android
+    - 插件化
+    - java
+    - classloader
 ---
 
 # 🔌 认识插件化

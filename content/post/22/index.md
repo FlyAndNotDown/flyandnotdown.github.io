@@ -9,6 +9,11 @@ tags:
     - Tips
     - MacOS
     - Terminal
+keywords:
+    - macos
+    - 环境变量
+    - 重启
+    - 失效
 ---
 
 # 🍥 问题简述

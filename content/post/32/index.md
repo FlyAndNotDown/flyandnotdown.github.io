@@ -8,6 +8,11 @@ categories:
 tags:
     - Tool
     - PlantUML
+keywords:
+    - uml
+    - plantuml
+    - 绘图
+    - 类图
 ---
 
 # PlantUML 介绍

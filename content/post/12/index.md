@@ -8,6 +8,9 @@ categories:
 tags:
     - JavaScript
     - Languages
+keywords:
+    - javascript
+    - 模板字符串
 ---
 
 模板字符串是可以使用内嵌表达式的字符串，不少高级语言中都有这一特性，如 `Python`、`Kotlin`，`JavaScript` 也在 `ES5` 规范中加入了这一特性。

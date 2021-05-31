@@ -8,6 +8,12 @@ categories:
 tags:
     - Frontend
     - Web
+keywords:
+    - web
+    - hugo
+    - hexo
+    - react
+    - 静态页面
 ---
 
 # SPA 它真的香吗？

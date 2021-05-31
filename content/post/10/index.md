@@ -9,6 +9,10 @@ tags:
     - Bluetooth
     - Android
     - FastBLE
+keywords:
+    - android
+    - 蓝牙
+    - fastble
 ---
 
 # ☕ FastBle VS 原生Android蓝牙API

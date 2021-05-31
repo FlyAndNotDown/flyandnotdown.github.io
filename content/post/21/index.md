@@ -10,6 +10,10 @@ tags:
     - Test
     - Debug
     - Tips
+keywords:
+    - android
+    - debug
+    - 调试
 ---
 
 在 `Android Studio` 中，最基本的以 `debug` 模式运行程序并打断点进行调试，相比大家都会，不过，如果遇到一些特殊的调试场景，则需要运用一些特殊的调试技巧来进行调试。

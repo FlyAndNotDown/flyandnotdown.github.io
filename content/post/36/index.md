@@ -10,6 +10,12 @@ tags:
     - RenderDoc
     - Debug
     - Graphics
+keywords:
+    - macos
+    - renderdoc
+    - 渲染
+    - 图形
+    - 调试
 ---
 
 # 安装依赖

@@ -7,4 +7,8 @@ menu:
     main:
         weight: -70
         pre: archives
+keywords:
+    - Kindem的博客
+    - Kindem
+    - 归档
 ---

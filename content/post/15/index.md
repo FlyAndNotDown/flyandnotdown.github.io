@@ -8,6 +8,9 @@ categories:
 tags:
     - Git
     - Tutorial
+keywords:
+    - git
+    - 教程
 ---
 
 # 🤔 何谓 git

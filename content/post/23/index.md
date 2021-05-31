@@ -9,6 +9,11 @@ tags:
     - Tips
     - MacOS
     - Homebrew
+keywords:
+    - macos
+    - homebrew
+    - 安装
+    - 更新
 ---
 
 # 🍖 安装

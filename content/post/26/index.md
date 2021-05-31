@@ -9,6 +9,10 @@ tags:
     - Graphics
     - OpenGL
     - MacOS
+keywords:
+    - macos
+    - opengl
+    - 开发环境
 ---
 
 # 准备工作

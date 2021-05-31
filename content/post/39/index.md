@@ -7,6 +7,10 @@ categories:
     - 技术
 tags:
     - CPP
+keywords:
+    - c++
+    - crtp
+    - 静态多态
 ---
 
 # CRTP

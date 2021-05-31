@@ -7,6 +7,8 @@ categories:
     - 技术
 tags:
     - Linux
+keywords:
+    - linux
 ---
 
 # 👦 用户类

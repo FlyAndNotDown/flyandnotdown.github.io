@@ -9,6 +9,11 @@ tags:
     - Windows
     - Linux
     - WSL
+keywords:
+    - wsl
+    - bash
+    - windows
+    - 教程
 ---
 
 # 🤔 什么是 Bash On Windows

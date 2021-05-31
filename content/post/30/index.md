@@ -9,6 +9,11 @@ tags:
     - Node.js
     - JavaScript
     - Email.js
+keywords:
+    - 邮件
+    - emailjs
+    - javascript
+    - nodejs
 ---
 
 # 💡 背景

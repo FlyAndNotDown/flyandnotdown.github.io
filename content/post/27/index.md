@@ -7,6 +7,9 @@ categories:
     - 日志
 tags:
     - Diary
+keywords:
+    - 感情
+    - 日志
 ---
 
 # 在世界的尽头

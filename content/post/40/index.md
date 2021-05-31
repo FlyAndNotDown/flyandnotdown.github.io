@@ -9,6 +9,12 @@ tags:
     - Explosion
     - Game
     - Graphics
+keywords:
+    - explosion
+    - c++
+    - 游戏引擎
+    - 渲染
+    - 图形
 ---
 
 # 进展概览

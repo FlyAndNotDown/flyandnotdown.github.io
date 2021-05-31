@@ -8,6 +8,11 @@ categories:
 tags:
     - Ajax
     - Http
+keywords:
+    - ajax
+    - 跨域
+    - cors
+    - jsonp
 ---
 
 # 🤔 Ajax跨域简介

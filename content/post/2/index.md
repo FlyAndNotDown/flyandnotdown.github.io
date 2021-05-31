@@ -8,6 +8,9 @@ categories:
 tags:
     - Git
     - Tips
+keywords:
+    - git
+    - 编程
 ---
 
 # 🤔 问题

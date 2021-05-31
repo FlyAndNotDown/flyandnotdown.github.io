@@ -8,6 +8,10 @@ categories:
 tags:
     - VSCode
     - Markdown
+keywords:
+    - vscode
+    - markdown
+    - 写作
 ---
 
 # 🍜 预备知识

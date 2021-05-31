@@ -8,6 +8,10 @@ categories:
 tags:
     - Git
     - Tips
+keywords:
+    - git
+    - fork
+    - pull
 ---
 
 # Upstream Remote

@@ -8,6 +8,10 @@ categories:
 tags:
     - React
     - Frontend
+keywords:
+    - react
+    - uglify
+    - javascript
 ---
 
 # 🤔 起因

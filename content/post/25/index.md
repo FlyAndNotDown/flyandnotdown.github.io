@@ -9,6 +9,12 @@ tags:
     - JetBrains
     - IDE
     - Share
+keywords:
+    - jetbrains
+    - ide
+    - 配色
+    - 主题
+    - 字体
 ---
 
 # 🍙 整体图

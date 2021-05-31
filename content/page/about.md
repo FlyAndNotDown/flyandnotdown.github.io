@@ -12,6 +12,10 @@ menu:
     main: 
         weight: -90
         pre: user
+keywords:
+    - Kindem的博客
+    - Kindem
+    - 关于
 ---
 
 Hello, 我是 Kindem，一名全栈开发者，目前就职于 **Huawei 2012 实验室**，热爱生活，热爱代码~

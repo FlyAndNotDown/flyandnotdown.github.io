@@ -8,6 +8,9 @@ categories:
 tags:
     - Axios
     - JavaScript
+keywords:
+    - axios
+    - javascript
 ---
 
 # 🤔 axios是什么

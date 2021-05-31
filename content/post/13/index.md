@@ -9,6 +9,10 @@ tags:
     - JavaScript
     - Node.js
     - NPM
+keywords:
+    - javascript
+    - shell
+    - npm
 ---
 
 # 🧐 quick-shell.js简介

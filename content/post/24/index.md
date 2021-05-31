@@ -9,6 +9,11 @@ tags:
     - Linux
     - Ubuntu
     - MySQL
+keywords:
+    - ubuntu
+    - debian
+    - mysql
+    - 安装
 ---
 
 # 🧀 配置 apt-get Repo

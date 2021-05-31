@@ -9,6 +9,9 @@ tags:
     - Django
     - Python
     - Backend
+keywords:
+    - django
+    - python
 ---
 
 在 `Django` 中，上传文件不同于普通服务器的上传方法，在普通服务器中只需要使用一个 `Controller` 来控制文件的上传即可完成，但是在 `Django` 中，则需要额外使用数据库资源来存储文件。本文将说明如何使用 `Django` 接收、保存并且返回图片。

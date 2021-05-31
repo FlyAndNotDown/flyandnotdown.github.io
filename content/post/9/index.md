@@ -9,6 +9,9 @@ tags:
     - Linux
     - Ubuntu
     - GTK
+keywords:
+    - ubuntu
+    - gtk
 ---
 
 # 📦 Ubuntu18 下 Gtk 开发环境搭建
