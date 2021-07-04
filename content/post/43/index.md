@@ -121,16 +121,8 @@ private byte[] nextHash() {
 
 下面是重构之后用应用生成的一些 GitHub 风格头像：
 
-<div>
-    <img alt="Sample1" src="2.png" width="200"/>
-    <img alt="Sample2" src="3.png" width="200"/>
-    <img alt="Sample3" src="4.png" width="200"/>
-</div>
-<div>
-    <img alt="Sample4" src="5.png" width="200"/>
-    <img alt="Sample5" src="6.png" width="200"/>
-    <img alt="Sample6" src="7.png" width="200"/>
-</div>
+![Sample1](2.png) ![Sample2](3.png) ![Sample3](4.png)
+![Sample4](5.png) ![Sample5](6.png) ![Sample6](7.png)
 
 <br/>
 
