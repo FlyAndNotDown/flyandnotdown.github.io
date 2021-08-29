@@ -2,3 +2,4 @@
 /resources/_gen
 /public
 /**/.DS_Store
+/scripts/node_modules
