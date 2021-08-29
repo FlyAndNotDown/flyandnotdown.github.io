@@ -2,7 +2,7 @@ const Axios = require('axios');
 const FileSystem = require('fs');
 
 const config = {
-    postDir: '../content/post',
+    postDir: 'content/post',
     basePostUrl: 'https://www.kindem.xyz/post',
     targetHost: 'http://data.zz.baidu.com/urls?site=https://www.kindem.xyz&token=lDsJO81mKXxekZI6',
     fixedUrls: [
