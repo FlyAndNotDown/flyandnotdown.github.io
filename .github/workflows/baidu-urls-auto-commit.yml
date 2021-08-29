@@ -18,5 +18,8 @@ jobs:
       with:
         cache: 'npm'
     
+    - name: Install NPM dependencies
+      run: npm install
+    
     - name: Auto Commit Urls To Baidu Spider Server
       run: node scripts/baidu-auto-commit.js
