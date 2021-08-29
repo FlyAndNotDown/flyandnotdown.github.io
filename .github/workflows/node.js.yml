@@ -1,0 +1,27 @@
+name: Auto Commit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install NPM modules
+      working-directory: scripts
+      run: npm install
+    
+    - name: Auto Commit Urls To Baidu Spider Server
+      working-directory: scripts
+      run: node baidu-auto-commit.js
