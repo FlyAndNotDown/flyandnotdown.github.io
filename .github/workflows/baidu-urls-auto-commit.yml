@@ -1,4 +1,4 @@
-name: Auto Commit
+name: Baidu Urls Auto Commit
 
 on:
   workflow_dispatch:
