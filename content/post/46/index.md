@@ -1,6 +1,6 @@
 ---
-title: "std::any 源码解析"
-description: "C++ STL 源码解析系列"
+title: "MSVC std::any 源码解析"
+description: "MSVC C++ STL 源码解析系列"
 date: "2021-08-28"
 slug: "46"
 categories:
