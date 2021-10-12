@@ -70,14 +70,21 @@ auto v = any_cast<Hello>(value);
 std::cout << "a: " << v.a << ", b: " << v.b << std::endl;
 ```
 
-需要注意的是，这里 `any_cast` 得到的是拷贝，如果需要更高效的操作，可以获取指针：
+需要注意的是，这里 `any_cast` 得到的是拷贝，如果需要更高效的操作，可以获取指针或者引用：
 
 ```cpp
 std::any value = Hello { .a = 1, .b = 2 };
-auto* v = any_cast<Hello>(&value);
+
+auto* v0 = any_cast<Hello>(&value);
 // a: 1, b: 2
-std::cout << "a: " << v->a << ", b: " << v->b << std::endl;
+std::cout << "a: " << v0->a << ", b: " << v0->b << std::endl;
+
+auto& v1 = any_cast<Hello&>(value);
+// a: 1, b: 2
+std::cout << "a: " << v1.a << ", b: " << v1.b << std::endl;
 ```
+
+获取指针时，`any_cast` 的入参也需要是指针，而获取引用则 `any_cast` 的模板参数需要为引用类型。
 
 # 源码阅读
 
@@ -630,7 +637,7 @@ _NODISCARD remove_cv_t<_Ty> any_cast(any&& _Any) {
 * `any& _Any` -> `remove_cv_t<_Ty>`
 * `any&& _Any` -> `remove_cv_t<_Ty>`
 
-总结起来就是入参的 `std::any` 为指针时，返回 value 指针，否则返回 value 拷贝，所以使用时如果对应的是结构体 / 类，应该尽量获取指针来保持高效，避免内存拷贝降低性能。
+总结起来就是入参的 `std::any` 为指针时，返回指针，否则返回 `remove_cv_t<_Ty>`，所以使用时如果对应的是结构体 / 类，应该尽量获取指针或者引用来保持高效，避免内存拷贝降低性能（例子可以看文首的介绍）。
 
 # 总结
 
@@ -638,4 +645,4 @@ _NODISCARD remove_cv_t<_Ty> any_cast(any&& _Any) {
 * `std::any` 内部将内存分为 Trivial、Small、Big 三种，Trivial 内存直接对拷，Small 内存需要保存额外的拷贝、移动、销毁指针，具体操作是 in_place 的，Big 内存需要保存额外的拷贝、销毁指针，具体操作是堆内存的 new、delete
 * `std::any` 内部保存了 `std::type_info` 的指针，用于 `std::any_cast` 校验类型
 * `std::any_cast` 会依据 `std::type_info` 做类型校验
-* `std::any_cast` 的返回值会根据入参类型发生变化，入参为指针则返回 value 指针，否则返回 value 拷贝
+* `std::any_cast` 的返回值会根据入参类型发生变化，入参为指针则返回指针，否则返回 `remove_cv_t<_Ty>`
