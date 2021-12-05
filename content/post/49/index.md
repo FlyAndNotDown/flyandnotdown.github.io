@@ -1,6 +1,5 @@
 ---
-title: "GPU Pro 1 笔记 - As Simple as Possible Tessellation
-for Interactive Applications"
+title: "GPU Pro 1 笔记 - As Simple as Possible Tessellation for Interactive Applications"
 description: "文章介绍了一种曲面细分的方法，被称为 Phong Tessellation，可以运行时丰富模型细节。"
 date: "2021-11-25"
 slug: "49"
