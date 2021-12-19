@@ -1,5 +1,5 @@
 ---
-title: "UnrealEngine5 地形系统初探"
+title: "UE5 地形系统初探"
 description: "最近在搞 UE 地形的魔改与优化，简单记录一下地形系统的学习。"
 date: "2021-12-05"
 slug: "50"
@@ -85,4 +85,4 @@ UE 可以直接在编辑器中创建并编辑地形，编辑地形的模式有�
 
 ![Heightmap & Weightmap](13.jpg)
 
-Landscape 的 DrawCall 中可以清楚地看见 Heightmap 和 Weightmap，上面那张就是 Heightmap，整个地形一张，而下面的 Weightmap 则是按 Section 来的，每个 Section 一张。
+Landscape 的 DrawCall 中可以清楚地看见 Heightmap 和 Weightmap，上面那张就是 Heightmap，整个地形一张，而下面的 Weightmap 则是按 Component 来的，每个 Component 一张。
