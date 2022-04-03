@@ -1,7 +1,7 @@
 ---
 title: "GPU Pro 1 笔记 - Screen-Space Directional Occlusion"
 description: "SSDO 是 SSAO 的改进版，在 SSAO 的基础上加了环境光和单次反射的间接光信息，效果更好。"
-date: "2022-04-03"
+date: "2022-04-02"
 slug: "54"
 categories:
     - 技术
