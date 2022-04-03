@@ -29,7 +29,9 @@ Hello, 我是 Kindem，一名全栈开发者，热爱生活，热爱代码~
 
 主要开源项目（想要加入的同学联系我！）：
 
-<a href="https://github.com/ExplosionEngine/Explosion" target="_blank"><img src="/explosion.png" alt="Explosion"/></a>
+* [Explosion GameEngine](https://github.com/ExplosionEngine/Explosion)
+
+![Explosion](/explosion.png)
 
 个人经历：
 
