@@ -1,17 +1,16 @@
 ---
 title: "CryEngine5 Shader 调试"
-description: "SSDO 是 SSAO 的改进版，在 SSAO 的基础上加了环境光和单次反射的间接光信息，效果更好。"
-date: "2022-04-02"
-slug: "54"
+description: "CryEngine 踩坑系列。"
+date: "2022-04-30"
+slug: "55"
 categories:
     - 技术
 tags:
-    - Paper
+    - CryEngine
 keywords:
-    - GPU Pro
-    - SSDO
-    - SSAO
-    - AO
+    - CryEngine
+    - Shader
+    - Debug
 ---
 
 # CryEngine5 Shader 调试
