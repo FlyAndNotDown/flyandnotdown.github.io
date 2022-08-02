@@ -64,3 +64,7 @@ Ready
 完成编译后再使用 RenderDoc 重新抓取，再编辑或调试 Shader 就能看见源码了：
 
 ![](2.png)
+
+---
+
+我的博客即将同步至腾讯云开发者社区，邀请大家一同入驻：https://cloud.tencent.com/developer/support-plan?invite_code=2lqleka8dkysc
