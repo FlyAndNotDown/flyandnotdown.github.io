@@ -1,7 +1,7 @@
 ---
 title: "GDC 笔记 - FidelityFX Super Resolution 2.0"
 description: "AMD 的 FSR2，在 DLSS 不支持的硬件上不失为一种不错的超分算法选项。"
-date: "2022-09-03"
+date: "2022-09-02"
 slug: "56"
 categories:
     - 技术
@@ -13,8 +13,6 @@ keywords:
     - FidelityFX
     - SuperResolution
 ---
-
-# FidelityFX Super Resolution 2.0
 
 > 原文链接：[GDC 2022 - FidelityFX Super Resolution 2.0](https://gpuopen.com/gdc-presentations/2022/GDC_FidelityFX_Super_Resolution_2_0.pdf)
 > 
