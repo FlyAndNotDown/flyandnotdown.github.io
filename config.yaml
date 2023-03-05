@@ -136,3 +136,5 @@ related:
 markup:
     highlight:
         noClasses: false
+
+timeout: 300s
