@@ -31,6 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HUGO_VERSION: 0.108.0
+      BASE_URL: https://flyandnotdown.github.io/
     steps:
       - name: Install Hugo CLI
         run: |
@@ -54,8 +55,7 @@ jobs:
           HUGO_ENV: production
         run: |
           hugo \
-            --minify \
-            --baseURL "${{ steps.pages.outputs.base_url }}/"
+            --minify
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
@@ -65,7 +65,7 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: "${BASE_URL}"
     runs-on: ubuntu-latest
     needs: build
     steps:
