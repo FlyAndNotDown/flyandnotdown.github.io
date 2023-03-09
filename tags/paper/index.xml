@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Paper on Kindem的博客</title><link>https://www.kindem.xyz/tags/paper/</link><description>Recent content in Paper on Kindem的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 02 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://www.kindem.xyz/tags/paper/index.xml" rel="self" type="application/rss+xml"/><item><title>GPU Pro 1 笔记 - Screen-Space Directional Occlusion</title><link>https://www.kindem.xyz/post/54/</link><pubDate>Sat, 02 Apr 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/54/</guid><description>SSDO 全称 Screen Space Directional Occlusion，可以看做一种实时 GI 算法，是 SSAO 的升级版。
+Ambient Occlusion (AO) 即环境光遮蔽是一种常见的提升表面细节的技术，基本思路是在 Mesh 表面预计算周围的遮挡信息，然后在计算光照的时候把遮蔽因子作为系数叠加到环境光上。遮蔽因子计算也比较简单，就是在表面上的一个半球区域内发射一系列射线，然后同级被遮挡的光线的数量即可。应用 AO 后，可以明显看到，表面的拐角处会变得更黑，从而体现出更真实的效果。
+AO 的计算比较耗，通常会为 Mesh 离线计算 AO 纹理，然后在运行时采样直接使用，下面这三张图分别是直接光照、AO 纹理、应用 AO 后的光照：
+因为 AO 纹理是预计算的，所以对于动态场景就没办法了。于是 SSAO (Screen Space Ambient Occlusion) 应运而生，在屏幕空间进行计算，在开销可以接受的情况下支持动态场景。SSAO 最早是 CryTek 提出的，并运用于自家的引擎 CryEngine 中，最初的 SSAO 算法是直接在屏幕空间表面的一个球形区域内随机进行一系列采样，然后把采样点的深度跟表面的深度相对比，如果在表面之下，则该采样对最终的遮蔽因子产生贡献。下面是盗的 LearnOpenGL 的图：
+但是这种算法实际效果不太好，会使得画面有一种灰蒙蒙的感觉：
+更好的做法是按照表面的法线取一个半球空间进行采样：
+这样效果会更好，但是无论如何，SSAO 有个致命的缺陷，就是它只考虑了遮挡关系，所以只能让拐角处 “更黑”，还是没办法记录光照信息。比如下面这张图，P 点附近有两个颜色不同的光源，按照遮挡关系，P 点应该会被绿光照亮，从而体现出绿色，而不是 SSAO 表现出来的黑色：
+SSDO 的提出就是为了解决这个问题，SSDO 在计算遮挡关系的同时还会考虑光照信息，从而让拐角处产生能带颜色的遮蔽效果：
+首先来看下 SSDO 怎么捕获直接光信息：
+我们在 P 点法线方向的一个半球空间中均匀散布一些采样点，用类似 SSAO 的方法，我们可以得知他们是在表面之上还是之下，如果在之上的话，就按照 P 点与采样点的连线方向采样 IrradianceEnvMap 即可，各个采样点的贡献累加后就是 P 点最终的直接光颜色。</description></item><item><title>GPU Pro 1 笔记 - As Simple as Possible Tessellation for Interactive Applications</title><link>https://www.kindem.xyz/post/49/</link><pubDate>Thu, 25 Nov 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/49/</guid><description>原文请参考 GPU Pro 1, Engel W . Chapter 1. As Simple as Possible Tessellation for Interactive Applications. 2010.
+笔记 文章提出了一种新的曲面细分方法，可以在运行时增加新的顶点，提高几何细节，被称为 Phong Tessellation，下面是普通渲染与曲面细分的对比图：
+Phong Shading / Phong Tessellation 在介绍 Phong Tessellation 之前，先介绍了一波前人的工作，首先是 Linear Tessellation：
+Linear Tesselation Expr 其中 Pi, Pj, Pk 为三角面片的三个顶点 Position，u, v, w 是一个可调整的权重值，满足 u + v + w = 1，P(u, v) 是生成的新的顶点的 Position，Linear Tessellation 可以在三角面片上生成一个新的顶点。但是在面片上生成新的顶点实际上并没啥用 &amp;hellip;.
+接着是按照类似的思路提出的 Phong Normal Tessellation，它的思路为新顶点产生插值的 Normal，从 Normal 的角度来丰富细节，公式和上面的类似，只是最后还要做一次 Normalize：
+Phong Normal Tessellation Expr 作者按照他们的思路，提供了一次非三角面片上的曲面细分，也就是开始说的 Phong Tessellation：</description></item></channel></rss>

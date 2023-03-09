@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Test on Kindem的博客</title><link>https://www.kindem.xyz/tags/test/</link><description>Recent content in Test on Kindem的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Mon, 30 Dec 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://www.kindem.xyz/tags/test/index.xml" rel="self" type="application/rss+xml"/><item><title>Android 调试技巧总结</title><link>https://www.kindem.xyz/post/21/</link><pubDate>Mon, 30 Dec 2019 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/21/</guid><description>在 Android Studio 中，最基本的以 debug 模式运行程序并打断点进行调试，相比大家都会，不过，如果遇到一些特殊的调试场景，则需要运用一些特殊的调试技巧来进行调试。
+🍗 在程序运行之后打断点调试 有时候，我们需要对已经运行的程序进行调试，这时候应该使用 Android Studio 的 Attach 功能：
+Attach 点击工具栏中的 Attach Debugger to Android Process 按钮，会显示出可以 Attach 的进程：
+如果未勾选 Show All Processes 选项，则只会显示当前项目对应的进程，勾选 Show All Processes 选项之后，则会显示当前机器上跑着的所有进程（需要 root 权限）。
+在调试之前先打好断点，然后在这里选择目标进程之后，即可成功断上。
+🍥 等待调试 在某些场景下，部分代码可能在程序一启动就执行完了，这种情况下，可以使用 “等待调试” 功能来让程序暂时停住，等待调试器 Attach 之后再开始执行。
+第一种方法是直接在代码中添加：
+import android.os.Debug; // ..... Debug.waitingForDebugger(); 编译运行后，当代码执行到这一句话之后，便会显示 Wait For Debugger 字样并且暂停执行，等待用户手动 Attach 之后才会接着执行，此时，就能断住之前执行太快断不住的代码进行调试了。
+另外一种方法是使用 adb 指令：
+adb shell am set-debug-app -w &amp;lt;packageName&amp;gt; 来设置待调试应用，设置了这一条语句之后启动对应应用之后则会停住，等待调试器 Attach，这种方法的好处是可以不用修改代码就让应用等待调试。
+🧀 调试 Android SDK 源码 在一些特殊的场景，需要调试 Android SDK 源码中产生的异常，通过 Android SDK 源码中产生的现象发现自己写的代码逻辑的问题。</description></item></channel></rss>

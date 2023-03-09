@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Explosion on Kindem的博客</title><link>https://www.kindem.xyz/tags/explosion/</link><description>Recent content in Explosion on Kindem的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 20 Jul 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://www.kindem.xyz/tags/explosion/index.xml" rel="self" type="application/rss+xml"/><item><title>Explosion 开发笔记 (四)</title><link>https://www.kindem.xyz/post/44/</link><pubDate>Tue, 20 Jul 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/44/</guid><description>前两个月在 Explosion 上下了不少功夫，好几周双休都抽出了一整天来开发引擎、做之后的设计，平日里下班了也是第一时间埋着头就开始写。直到这两周，Explosion 又暂停了下来，主要因为去杭州出差了，项目比较忙，没什么时间写。
+今天下班比较早，想起来了该要写笔记了，就提笔记录记录。
+近期进展 System / SystemGroup / SystemGraph ECS 框架我们是直接引用的 EnTT，但 EnTT 只提供了 Entity、Component 的概念，没有直接提供 System，它的本意是只负责 ECS 框架中最困难的内存管理部分，所以 System 的概念需要自己封装。
+在基础的 System 定义上，我们稍作了简化，并添加了 SystemGroup 和 SystemGraph 的概念，他们的定义如下：
+System：一个 Lambda 表达式，即代表一段可执行的逻辑。 SystemGroup：保存了一组 System 和一个 SystemGraph。 SystemGraph：描述了 SystemGroup 内部 System 之间的依赖关系。 另外，他们遵循如下规则：
+World#Tick() 会更新所有 SystemGroup，SystemGroup 具有优先级，SystemGroup 之间会按照优先级串行更新。 SystemGroup 内部的所有 System 会按照 SystemGraph 编译成一个 TaskFlow，用于描述一个更新任务。 TaskFlow Execute 的时候有依赖关系的 System 会进行软同步，按照先后顺序执行，没有依赖关系的 System 会并行执行。 System 之间可以拥有共享内存，也使用 Component 实现，我们称之为 SharedComponent，SystemGraph 产生的依赖关系可以保证这块内存的同步访问。 下面是部分定义以及 World#Tick() 的部分代码：</description></item><item><title>Explosion 开发笔记 (三)</title><link>https://www.kindem.xyz/post/40/</link><pubDate>Thu, 27 May 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/40/</guid><description>进展概览 Repo 建设 先说说最近的进展吧，首先是 Repo 方面的建设，README 先写起来占坑了，顺便随手自己画了张 logo 图上丢上去占坑，可以简单看看现在的 README：
+README 回头还需要把中文版的 README 和其他的细节慢慢补起来，不过我们现在真没太多人力投入这块，要做的东西太多了，之后把引擎本身完善的差不多了之后再慢慢弄吧。
+工程管理 我们在团队内推崇大家使用 Issues 来交流、跟踪进展，使用 Project 来管理整个项目，大概效果是这样：
+Issues Project 提交 Issues 会自动关联到 Project，MR 中需要关联对应的 Issues，在 MR 关闭时，Issues 会自动跟随 MR 关闭，并移动到 Project 的 Done 一栏，这样我们就能方便地跟踪需求和进展。
+CI CI 方面我们目前使用的是 GitHub Actions，不得不说这玩意可塑性要比其他的 CI/CD 工具强很多，写起来也是比较方便的，目前 CI 就配置了一个 cmake 构建，覆盖平台有：
+Ubuntu Windows 具体的代码在这：Actions Code，提交 MR 后自动触发，构建结果可以在 Actions 查询：
+Action Result 构建通过是合入的硬性指标。其实我在纠结 MacOS 要不要加，因为实际上从构建来说，MacOS 的编译器和 GCC 还是比较一致的，一般不会出什么大岔子，后面再说吧。
+构建系统优化 我抽空对所有的 CMake 进行了一次重构，主要做的事情是把常用的一些基本 CMake 指令做了一次封装，主要涉及：</description></item><item><title>Explosion 开发笔记 (二)</title><link>https://www.kindem.xyz/post/37/</link><pubDate>Tue, 04 May 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/37/</guid><description>第一个三角形！ 先说说近期的进展吧，最大头的成果就是趁着五一假期把 VulkanDriver 基本写完了，经典三角形：
+Triangle 基本的接口封的差不多了，后面的小问题再慢慢修修补补吧。
+然后就是工程建设方面的，差不多这段时间把这些东西搞起来了：
+CI (GitHub Action) 三方库 Git SubModule 支持 README / WiKi 单元测试框架本来想加上，但想到目前也只有 Driver，没什么写 UT 的必要性，想想也就算了，等到后面慢慢有需要再加吧，反正集成 UT 框架也就是几行 CMake 的事情。
+接下来要做的是 RPI、Runtime、场景管理等，还得把预置的 Components、Systems 给加上，总之好好加油吧。
+不省心的 RHI RHI 是写引擎绕不开的巨坑，时常想吐槽这么多 API，你们相互之间打一架好不好，这么多年了也一直搞不出一个统一的 API，各个平台都想围绕自己打造封闭的生态。
+写 RHI 最难的事情就是要拿一套统一的接口去封装多个图形 API，于是乎割舍功能和删删改改变成了常态，称 RHI 为脏活累活一点不过分。对各个 API 的了解程度将直接决定 RHI 最终接口的实用程度。
+别的很多东西其实可以借鉴老哥们，但是针对 RHI 这层来说，老大哥们的封装其实也不咋地，因为以前的 API 粒度毕竟是较 High Level 的（如 OpenGL、DX9 一类的），很多情况下无法发挥完全能效，再或者看看 CryEngine，索性直接 typedef 实现多态，硬生生把 RHI 和 RPI 糊在一起，只要我没有 RHI，最不存在烦恼，嗯，没毛病。
+之前也听同事吐槽过，自己造引擎如果从底层开始写，写到最后发现自己删了好几遍代码，写来写去最后还是一个三角形，上面的啥也没写。
+我目前的想法是先按照 Vulkan 的概念简单封装后搭建 Driver 的公共接口，这样上面的 RPI 和游戏逻辑框架也可以先写起来了，日后再慢慢补充 DX12Driver 和 MetalDriver。</description></item><item><title>Explosion 开发笔记 (一)</title><link>https://www.kindem.xyz/post/35/</link><pubDate>Thu, 15 Apr 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/35/</guid><description>Explosion 是我新开发的游戏引擎，GitHub 地址在这里： Explosion，预计是一个大大的工程，我也将持续开发与维护，欢迎志同道合的朋友加入与我一同创造新的游戏秩序。我会在博客中持续更新自己开发过程中的一些心得与思考，欢迎大家关注，Explosion 的故事将由此开始。
+为什么要做 Explosion 其实早在上大学那会，我就对计算机图形学和游戏开发有着浓厚的兴趣，大一的时候使用过 Unity 和 Unreal 开发过游戏，在计算机图形学课程设计中，也使用过 OpenGL 2.0，当时大二大三那会接触到了 Web 开发，后来就一直沉迷于 Web 无法自拔了。
+机缘巧合下，我的工作却恰好又是跟图形学相关，第一次接触可编程渲染管线（那会是使用 OpenGL）的时候，我仿佛打开了新世界的大门，复杂的游戏场景原来都是由这样的原语构成。
+加上自己的兴趣爱好（当然是电子游戏！）使然，组织架构调整的时候我毅然加入了实验室的渲染引擎组，开始参与渲染引擎的开发。
+再后来我接触到了 Vulkan、DX12、Metal 等更现代的 GraphicsAPI，同时也逐渐了解了硬件的工作原理，也逐渐理解了游戏底层神秘的引擎到底是怎么运作的，兴趣越来越浓。
+俗话说的好，认识一门技术最好的方法就是造轮子，于是我义务反顾地投入了游戏引擎开发大军。
+谈谈前辈们 我心目中的游戏引擎一哥当然是 Unreal，老二是 Unity，全封闭的引擎生态这里就不提了。
+Unreal 的优点当然是不需要做很多的额外开发，就能获得相当不错的画质效果，相反，缺点则是如果你不是很懂一些渲染的原理，Unreal 对你将会很不友好，很多时候，读它给的文档不如直接读源码。另外如果要加一些自己的扩展特性的话，一旦涉及到渲染管线，大概率要改代码然后再源码编引擎，不过，Unreal 自己的意思也很明确了，老子开源，给你看你不会改，怪谁？
+Unity 的话，对开发者的友好程度就要好很多了，文档、资料、教程相当多，C# 写起来也相对比较舒服。Unity 的画质不自己搞的话也就那样了，不过 Unity 也说了，我扩展性这么高，你自己不会写，怪谁？
+另外，值得一提的是，针对新的游戏架构 ECS，Unity 在这方面应该算是先驱了，自己已经弄了一套 ECS 的 Preview 接口了，有空可以详细聊聊 Unity 的 ECS。
+Unreal 和 Unity 的源码我都读过一部分，Unreal 和 Unity 只能说这种体量的东西是工程界的奇迹，只要架构没有腐坏到无可救药的程度，哪怕局部屎再多也能糊住，多数情况下，它们的代码看起来就是微观来看简直屎的不行，但从宏观架构来看还能过得去。
+再下来我了解到的一些引擎有 CryEngine、Cocos、Godot、KlayGE 等。
+CryEngine 的代码简直可以用灾难来形容，在其上搭建的 Amazon Lumberyard 也是一个灾难，相信我，只要你看一眼它的 CD3D9Renderer 你就知道我在说什么了。CryEngine 的文档也很差劲，不过好像它的忠实拥趸还挺多，但据我所知，买过它来做游戏的育碧和 EA 都跑路了，CryEngine，把你弄哭的引擎。</description></item></channel></rss>

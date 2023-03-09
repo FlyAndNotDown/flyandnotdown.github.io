@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>MySQL on Kindem的博客</title><link>https://www.kindem.xyz/tags/mysql/</link><description>Recent content in MySQL on Kindem的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 22 Feb 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://www.kindem.xyz/tags/mysql/index.xml" rel="self" type="application/rss+xml"/><item><title>Ubuntu / Debian 安装 MySQL</title><link>https://www.kindem.xyz/post/24/</link><pubDate>Sat, 22 Feb 2020 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/24/</guid><description>🧀 配置 apt-get Repo 首先打开网站 MySQL APT Repo，下载 MySQL APT 仓库描述文件：
+MySQL APT Repo 右键 No thanks, just start my download 链接，选择复制链接：
+Download 进入服务器终端，进入工作目录：
+cd ~ 使用 wget 下载刚刚复制的 deb 文件链接：
+wget https://dev.mysql.com/get/mysql-apt-config_0.8.15-1_all.deb 版本号可能不一定相同，以你自己复制的为准。下载完成后可以看到新增的文件，使用 dpkg 将仓库添加到 apt-get 中：
+sudo dpkg -i ./mysql-apt-config_0.8.15-1_all.deb 过程中会弹窗：
+Repo Request 选择最后一项继续，完成选择后再更新一把 apt-get 的源：
+sudo apt-get update 完成后可以开始正式的安装了：
+🍙 安装 sudo apt-get install mysql-server 中途会提示输入创建数据库 root 用户密码，创建后继续即可。
+🍥 基本操作 开启服务：
+sudo service mysql start 关闭服务：
+sudo service mysql stop 重启服务：</description></item></channel></rss>

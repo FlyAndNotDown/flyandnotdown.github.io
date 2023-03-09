@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tips on Kindem的博客</title><link>https://www.kindem.xyz/tags/tips/</link><description>Recent content in Tips on Kindem的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 18 Feb 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://www.kindem.xyz/tags/tips/index.xml" rel="self" type="application/rss+xml"/><item><title>MacOS Homebrew 安装、更新慢解决方法</title><link>https://www.kindem.xyz/post/23/</link><pubDate>Tue, 18 Feb 2020 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/23/</guid><description>🍖 安装 如果使用 Homebrew 官方的安装脚本进行安装，会发现安装十分缓慢，我们可以更换安装脚本中设置的仓库路径来加速安装过程。
+首先先将官方的脚本下载下来，命名为 install：
+curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install &amp;gt;&amp;gt; install 使用 vim 或者其他文本编辑器打开 install 脚本，修改：
+BREW_REPO 一行为：
+BREW_REPO = &amp;#34;https://mirrors.ustc.edu.cn/brew.git&amp;#34;.freeze 保存后重新使用 ruby 运行脚本：
+ruby ./install 脚本会飞速安装，然后停顿在 homebrew-core 的下载过程，此时使用 ^C 快捷键强制结束进程，将 homebrew-core 手动下载到 homebrew 安装目录：
+git clone git://mirrors.ustc.edu.cn/homebrew-core.git/ /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core --depth=1 🧀 换源 完成上面的步骤之后，使用如下命令完成换源：
+# change brew source cd $(brew --repo) git remote set-url origin https://mirrors.ustc.edu.cn/brew.git # change brew-core source cd &amp;#34;$(brew --repo)/Library/Taps/homebrew/homebrew-core&amp;#34; git remote set-url origin https://mirrors.ustc.edu.cn/homebrew-core.git 完成换源之后，再执行更新指令一次：
+brew update 看看是不是比以前快了许多呢？</description></item><item><title>MacOS 环境变量重启失效问题解决</title><link>https://www.kindem.xyz/post/22/</link><pubDate>Thu, 23 Jan 2020 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/22/</guid><description>🍥 问题简述 之前用 Linux 习惯于将环境变量统一配置在 ~/.bash_profile 中，最近工作流切换到 MacOS 上，发现之前的法子不管用了，每次重启之后之前配置的环境变量就会失效。
+网上的说法是用了 zsh 才会出现这种情况，但是我自己并没有配置 zsh。
+经过一番周折发现 MacOS 在 10.15 版本以上默认终端就切换到了 zsh，所以就算没有配，也会被坑 &amp;hellip;
+🍖 解决办法 先使用这条指令查看自己到底是什么终端：
+ps -p $$ 比如我自己的：
+kindem@JohndeMBP platform-tools % ps -p $$ PID TTY TIME CMD 1274 ttys000 0:00.04 zsh 可以很明显的看到这里写的是 zsh，所以需要将 ~/.bash_profile 中配置的内容移动到 ~/.zshrc，或者将：
+source ~/.bash_profile 写入 ~/.zshrc 即可。</description></item><item><title>Android 调试技巧总结</title><link>https://www.kindem.xyz/post/21/</link><pubDate>Mon, 30 Dec 2019 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/21/</guid><description>在 Android Studio 中，最基本的以 debug 模式运行程序并打断点进行调试，相比大家都会，不过，如果遇到一些特殊的调试场景，则需要运用一些特殊的调试技巧来进行调试。
+🍗 在程序运行之后打断点调试 有时候，我们需要对已经运行的程序进行调试，这时候应该使用 Android Studio 的 Attach 功能：
+Attach 点击工具栏中的 Attach Debugger to Android Process 按钮，会显示出可以 Attach 的进程：
+如果未勾选 Show All Processes 选项，则只会显示当前项目对应的进程，勾选 Show All Processes 选项之后，则会显示当前机器上跑着的所有进程（需要 root 权限）。
+在调试之前先打好断点，然后在这里选择目标进程之后，即可成功断上。
+🍥 等待调试 在某些场景下，部分代码可能在程序一启动就执行完了，这种情况下，可以使用 “等待调试” 功能来让程序暂时停住，等待调试器 Attach 之后再开始执行。
+第一种方法是直接在代码中添加：
+import android.os.Debug; // ..... Debug.waitingForDebugger(); 编译运行后，当代码执行到这一句话之后，便会显示 Wait For Debugger 字样并且暂停执行，等待用户手动 Attach 之后才会接着执行，此时，就能断住之前执行太快断不住的代码进行调试了。
+另外一种方法是使用 adb 指令：
+adb shell am set-debug-app -w &amp;lt;packageName&amp;gt; 来设置待调试应用，设置了这一条语句之后启动对应应用之后则会停住，等待调试器 Attach，这种方法的好处是可以不用修改代码就让应用等待调试。
+🧀 调试 Android SDK 源码 在一些特殊的场景，需要调试 Android SDK 源码中产生的异常，通过 Android SDK 源码中产生的现象发现自己写的代码逻辑的问题。</description></item></channel></rss>

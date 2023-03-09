@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>JavaScript on Kindem的博客</title><link>https://www.kindem.xyz/tags/javascript/</link><description>Recent content in JavaScript on Kindem的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 14 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://www.kindem.xyz/tags/javascript/index.xml" rel="self" type="application/rss+xml"/><item><title>使用 Emailjs 发送邮件</title><link>https://www.kindem.xyz/post/30/</link><pubDate>Thu, 14 Jan 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/30/</guid><description>💡 背景 突然需要一个后端发送邮箱验证码的功能，我使用的后端框架是基于 Node.js 搭建的，所以准备找一个合适的能够调用 SMTP 服务发送邮件的轮子。
+一番寻找之后，我找到了 emailjs，下面简单介绍一下用法。
+📦 安装 最经典的 npm/yarn 安装：
+# Yarn yarn add emailjs # Npm npm install emailjs 📮 配置邮箱 接下来需要一个可以使用的邮箱账户，因为我不准备以个人邮箱发送验证码，我使用了免费的 腾讯企业邮箱，注册了一个企业账户，当然你可以使用任意支持 SMTP 服务的邮箱。
+接下来需要在邮箱后台配置开启 SMTP 服务：
+Email Config 有一些邮箱对于三方客户端采取了高级的安全登录策略，不允许直接使用密码登录，而是使用 token，腾讯企业邮箱就采取了这样的方案：
+Login Config 这时候我们需要生成一个新的 token 用于 emailjs 使用 SMTP 服务：
+Token Generate 复制客户端密码，准备使用 emailjs 发送邮件。
+🎯 Emailjs 使用 emailjs 是基于 SMTP 服务发送邮件的，我们需要先查询对应邮箱服务器的 SMTP 服务端口与地址，腾讯企业邮箱有一个 配置指南，通过配置指南我们可以得到以下信息：
+SMTP 发送服务器地址：smtp.exmail.qq.com 端口号：465 SSL：开启 接下来编写 Node.js 代码：
+const { SMTPClient } = require(&amp;#39;emailjs&amp;#39;); const client = new SMTPClient({ user: `${senderEmail}`, password: `${password}`, host: &amp;#39;smtp.</description></item><item><title>JavaScript 中的模板字符串</title><link>https://www.kindem.xyz/post/12/</link><pubDate>Sat, 09 Jun 2018 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/12/</guid><description>模板字符串是可以使用内嵌表达式的字符串，不少高级语言中都有这一特性，如 Python、Kotlin，JavaScript 也在 ES5 规范中加入了这一特性。
+☕ 语法 `text` `lin1 lin2` `text ${expr}` tag `text ${expr}` 🧀 详解 JavaScript 中的模板字符串使用反引号来包裹字符串内容而不是单引号或双引号。
+转义 因为模板字符串使用反引号来包裹字符串内容，所以在模板字符串内部使用反引号时需要转义，如下：
+`\`` === &amp;#39;`&amp;#39; // true 多行字符串 如果使用模板字符串，任何被包裹在两个反引号之间的字符都会被认为是有效的字符串内容，包括换行字符。所以。
+`line1 line2` //等价于 &amp;#39;line1\n&amp;#39; + &amp;#39;line2&amp;#39; 内嵌表达式 使用模板字符串的最大优势在于不必再使用繁琐的字符串连接操作来连接普通字符串与表达式，而是可以直接在字符串内部写表达式。
+let a = 10; let b = 20; // &amp;#39;10 + 20 = 30&amp;#39; console.log(`${a} + ${b} = ${a + b}`); 带标签的模板字符串 更高级的形式的模板字符串是带标签的模板字符串。标签使您可以用函数解析模板字符串。标签函数的第一个参数包含一个字符串值的数组。其余的参数与表达式相关。最后，你的函数可以返回处理好的的字符串（或者它可以返回完全不同的东西 , 如下个例子所述）。用于该标签的函数的名称可以被命名为任何名字。
+var person = &amp;#39;Mike&amp;#39;; var age = 28; function myTag(strings, personExp, ageExp) { var str0 = strings[0]; // &amp;#34;that &amp;#34; var str1 = strings[1]; // &amp;#34; is a &amp;#34; // There is technically a string after // the final expression (in our example), // but it is empty (&amp;#34;&amp;#34;), so disregard.</description></item><item><title>使用 Electron 和 React 构建桌面应用</title><link>https://www.kindem.xyz/post/11/</link><pubDate>Sun, 03 Jun 2018 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/11/</guid><description>🤔 Electron ? Electron 是一个使用 HTML、CSS、JavaScript 构建跨平台桌面应用的框架。
+说白了就是用这个框架，你可以在使用前端技术来开发桌面应用，原理是在本地应用上跑一个抽出来的浏览器，浏览器上放你写的页面。
+你可能会问 Electron 的存在有什么意义，众所周知，前端技术可以让我们轻松写出漂亮易用的界面，如果你尝试过其他的桌面开发技术，想必你也应该知道其他的那些桌面开发工具开发出来的界面有多丑，而 Electron 轻松地解决了这个问题。而且从另外一个角度来讲，Electron 也可以快速地将你的网站打包成一个原生应用发布。总之，前端技术是构建用户界面最好的选择，而 Electron 则为这一思想在桌面的实现奠定了基础。
+☕ 聊一聊需要用到的前端技术栈 如果你已经对常见的前端技术栈有着一定了解，建议直接跳至下一节，查看 Electron + React 项目的建立方法。
+在开始我们的畅聊之前，先要说一说原始的前端技术。众所周知，传统的前端技术都是使用 HTML、CSS、JavaScript 这御三家来完成开发的，HTML 负责页面框架、CSS 负责页面样式、JavaScript 负责页面动态，这三者各司其职，展现出一个完整美妙的 Web 世界。
+随着前端的发展，这三者开始出现了这样那样的问题，每一项新前端技术的出现，都是前端的一次飞跃。
+Node.js Node.js 的出现，无非是前端发展的一个里程碑，它的出现，将前端推向了一个新的高峰。
+Node.js 是一个基于 Chrome V8 引擎的 JavaScript 运行环境。Node.js 使用了一个事件驱动、非阻塞式 I/O 的模型，使其轻量又高效。 Node.js 的包管理器 npm，是全球最大的开源库生态系统。
+看官网的解释你可能还是一脸懵逼，这么说吧，传统的 JavaScript 只能依赖浏览器而运行，而 Node.js 则将 Chrome 的浏览器引擎抽了出来并加以改进，使得 JavaScript 可以脱离浏览器而运行。
+而 npm 则是 Node.js 的一个包管理工具，你可以使用 npm 安装这样那样的 JavaScript 包，就像 Python 的 pip 那样简单。</description></item><item><title>React Router 使用 Url 传参后改变页面参数不刷新的解决方法</title><link>https://www.kindem.xyz/post/7/</link><pubDate>Mon, 07 May 2018 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/7/</guid><description>🤔 问题 今天在写页面的时候发现一个问题，就是在 React Router 中使用了 Url 传参的功能，像这样:
+export class MainRouter extends React.Component { render() { return ( &amp;lt;BrowserRouter&amp;gt; &amp;lt;Switch&amp;gt; ... &amp;lt;Route exact path={&amp;#39;/channel/:channelId&amp;#39;} component={ChannelPerPage}/&amp;gt; ... &amp;lt;/Switch&amp;gt; &amp;lt;/BrowserRouter&amp;gt; ); } } 按照官方文档的说法，可以在 ChannelPerPage 这个组件中使用
+this.props.match.params 来获取 url 参数的值，但是我发现如果你在这个 url 下只将 url 中的参数部分改变，比如 channelId 从 1 变成 2 的时候，页面并不会重新渲染。
+🧐 解决办法 查阅资料后发现这样的根本原因是 props 的改变并不会引起组件的重新渲染，只有 state 的变化才会引起组件的重新渲染，而 url 参数属于 props，故改变 url 参数并不会引起组件的重新渲染。
+后来发现React的组件中有一个可复写的方法
+componentWillReceiveProps(nextProps) { ... } 这个方法可以在 React 组件中被复写，这个方法将会在 props 改变的时候被调用，所以你可以使用这个方法将 nextProps 获取到，并且在这个方法里面修改 state 的内容，这样就可以让组件重新被渲染。</description></item><item><title>使用原生 JavaScript 封装 Ajax 操作</title><link>https://www.kindem.xyz/post/5/</link><pubDate>Tue, 24 Apr 2018 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/5/</guid><description>📦 封装举例 export class Ajax { static get(url, data, hook) { let xmlHttpRequest = new XMLHttpRequest(); url += &amp;#39;?&amp;#39;; let count = -1; for (let key in data) { count++; if (data.hasOwnProperty(key)) { url += count === 0 ? key + &amp;#39;=&amp;#39; + data[key] : &amp;#39;&amp;amp;&amp;#39; + key + &amp;#39;=&amp;#39; + data[key]; } } xmlHttpRequest.open(&amp;#39;GET&amp;#39;, url, true); xmlHttpRequest.onreadystatechange = () =&amp;gt; { if (xmlHttpRequest.readyState === 4 &amp;amp;&amp;amp; xmlHttpRequest.status === 200 || xmlHttpRequest.</description></item></channel></rss>

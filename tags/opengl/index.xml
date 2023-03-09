@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>OpenGL on Kindem的博客</title><link>https://www.kindem.xyz/tags/opengl/</link><description>Recent content in OpenGL on Kindem的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 21 Apr 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://www.kindem.xyz/tags/opengl/index.xml" rel="self" type="application/rss+xml"/><item><title>MacOS 搭建 OpenGL 开发环境</title><link>https://www.kindem.xyz/post/26/</link><pubDate>Tue, 21 Apr 2020 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/26/</guid><description>准备工作 首先确认自己的 MacOS 上已经安装了 gcc：
+gcc --version 可以看到版本号：
+kindem@JohndeMacBook-Pro ~ % gcc --version Configured with: --prefix=/Applications/Xcode.app/Contents/Developer/usr --with-gxx-include-dir=/Applic ations/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++ /4.2.1 Apple clang version 11.0.3 (clang-1103.0.32.59) Target: x86_64-apple-darwin19.3.0 Thread model: posix InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin kindem@JohndeMacBook-Pro ~ % 如果没有安装的话会上面的指令会自动触发 XCode 下载并安装，根据提示安装完成之后再使用上面的指令检查一遍即可。
+接着安装 CLion，个人是极其推荐使用 JetBrain 家的 IDE 进行开发的，可以在如下网站下载：CLion - JetBrain，下载完成后自行完成安装与激活即可。
+安装完 CLion 之后，可以在 Settings 中检查 Toolchain 是否正确识别，如下：
+Toolchain 通常来说只需要安装好 gcc 即可，因为 cmake 会在 CLion 中自带，而 make 会在 MacOS 系统中提供。
+下载依赖库 通常来说，搭建 OpenGL 的开发环境需要两剑客：
+GLFW: 提供跨平台的 OpenGL 上下文初始化与窗口创建等功能 GLAD: 提供跨平台的 OpenGL 函数指针加载等功能 我们按照顺序分别下载这些库，首先是 GLFW，地址在这：Download - GLFW，GLFW 在不同的平台上都有预编译好的包，我们根据我们的系统下载 MacOS 版本的预编译包：</description></item></channel></rss>

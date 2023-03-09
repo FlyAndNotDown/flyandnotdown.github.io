@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>技术 on Kindem的博客</title><link>https://www.kindem.xyz/categories/%E6%8A%80%E6%9C%AF/</link><description>Recent content in 技术 on Kindem的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 03 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://www.kindem.xyz/categories/%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml"/><item><title>GDC 笔记 - Simulating Tropical Weather in FARCRY6</title><link>https://www.kindem.xyz/post/57/</link><pubDate>Sat, 03 Sep 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/57/</guid><description>FarCry6 的一个分享，热带天气的模拟。
+Speakers 的介绍，一个图形程序和一个 TA。
+先介绍下 FarCry6，FarCry 系列大家都比较熟悉了，一直都做的开放世界第一人称射击，每一代 FarCry 的剧情都会在一个不同的环境下展开。这一代故事发生在一个名为雅拉的热带小岛上，雅拉的原型是古巴（现实生活中古巴在美洲加勒比海附近，是一个热带群岛国家，北纬 19-24 度）。
+这一代玩家会扮演一名名为丹尼罗杰斯的本地反叛军，剧情就是推翻独裁者安东和他儿子迭戈的凶暴统治。这里的封面就是安东和迭戈，看过绝命毒师的应该都知道，这张脸的原型就是炸鸡叔，看着就知道是大反派。
+FarCry 的每一代开放世界都有自己的特色，本作的特色就是热带风情，要给玩家完美地展示热带风土人情，全动态的天气系统是必不可少的。
+这几张图展示了游戏中的不同天气，分别是晴天、雨天、阴天、夜晚。
+下面会分为几个板块去介绍 FarCry6 的天气系统：
+天气系统的灵感来源 天气系统的核心概念 如何让湿度影响所有资产的材质 用到的渲染技术 总结 首先是一些现实生活中热带天气的参考，之前说的古巴就是一个很合适的地方。
+在项目开始的时候，项目组花时间对热带天气进行了大量的调研，以带给玩家一个更加真实的世界。热带小岛的天气是独特而多变的，这几张图是热带小岛标志性的晴天。
+这几张图是压抑的雨天和雷暴天气。除了实现天气效果本身，天气系统还要能够支持剧烈地变化与切换。
+上面的参考被吸纳进了他们的概念设计中，这张图是早期的概念设计图。
+然而他们的艺术总监想要打造一种不祥的氛围，然后就改成了上面这种充满雷暴的天气。
+想要营造一种被风暴困住的感觉，真实的雨和湿润效果是必不可少的。
+当然，雅拉是一个小岛，所以天气与海的互动也是天气系统中重要的一环。
+时候需要记得我们是为一个开放世界游戏打造一套天气系统，所以有这些目标：
+足够真实 全动态，支持 TOD 天气切换过渡自然 高性能 下面介绍天气系统的一些核心概念。
+天气系统的核心是 Weather Manager，里面包含了一些定义并控制天气的关键信息。Weather Manager 本身是一个后端，前端则是 Weather Database，即暴露给美术的各种天气设置。
+Weather Presets 是项目中可以引用的一系列天气预设，每一个 Weather Preset 都引用了一系列 Weather Manager 暴露的参数，参数的变化可以印象天气。
+举几个例子，这张图是 Few Clouds 预设的效果与对应的参数。
+对比下，Broken Clouds 预设下云的覆盖率就更大，而且显得更蓬松。
+Mist 预设下就能看见一层淡淡的雾。
+Fog 预设下则更明显。
+Light Rain 预设，开始下小雨。
+Moderate Rain 预设，中雨。</description></item><item><title>GDC 笔记 - FidelityFX Super Resolution 2.0</title><link>https://www.kindem.xyz/post/56/</link><pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/56/</guid><description>原文链接：GDC 2022 - FidelityFX Super Resolution 2.0
+AMD FSR 2.0 版本，相对 FSR 1.0 架构上有较大改动。
+先回顾下 FSR 1.0，FSR 1.0 推出于 2021 年七月，是 AMD 推出的空间域超分解决方案，高性能，易集成，比价友好的 MIT License，已经在很多游戏中被集成了。
+因为 FSR 1.0 是基于空间域的超分算法，好处就是很容易集成（直接挂在后处理最后就行了），但同时也有一些缺陷：
+FSR 1.0 的输入需要经过高质量的抗锯齿处理，这个问题就算是不考虑超分，也是一个比较头疼的问题，把 FSR 1.0 挂在低质量的 TAA 实现后面就会产生质量很差的输出，这意味着如果游戏没有实现抗锯齿就集成 FSR 1.0，就要花上更多的时间。 超分的质量取决于输入图像的分辨率，如果输入图像的分辨率太低，就没有足够的信息来重现细节，太低的分辨率还会导致一些画面的缺陷，比如闪烁、边缘模糊等，这种情况通常在使用 Performance 模式时出现。 FSR 2.0 是下一代超分解决方案，不再基于空间域，而是基于时空域。FSR 2.0 与 FSR 1.0 并不兼容，需要不同的输入，并且直接内置了抗锯齿。质量要比 1.0 更高，提供了不同的 Quality Mode，同时支持了动态分辨率。跟 FSR 1.0 一样的是开源、跨平台、高度优化，不需要硬件支持的深度学习（内涵 DLSS），以 C++ / HLSL 库的方式提供 API，并且可以随意定制。
+算法介绍。
+FSR 2.0 的输入和 1.0 不再一样，输入为渲染尺寸的 Color、Depth、Motion（像素相比前一帧的位移）。与之对比，FSR 1.</description></item><item><title>CryEngine5 Shader 调试</title><link>https://www.kindem.xyz/post/55/</link><pubDate>Sat, 30 Apr 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/55/</guid><description>CryEngine5 Shader 调试 CryEngine5 跟 UE 一样，默认情况下 Shader 的符号表是隐藏了的，用 RenderDoc 抓帧之后是没法直接进行 Shader 调试的：
+这时候需要启用 Shader 符号表并重新编译 Shader，首先找到引擎根目录，打开 system.cfg 文件，在最后加上下面几行：
+r_ShadersEditing=1 r_ShadersDebug=3 r_ShadersRemoteCompiler=1 r_ShaderCompilerServer=127.0.0.1 r_ShaderCompilerPort=61453 然后进入 Tools/RemoteShaderCompiler 目录，打开 config.ini，确认端口号跟上面的一致。确认无误后打开同目录下的 CrySCompilerServer.exe出现下面字样 Shader 编译服务器就成功启动了：
+caching enabled Ready 找到项目目录（有 .cryproject 文件的目录），进入 user/shaders/cache/d3d11 目录把下面所有文件都删了，清空 Cache 以便 CryEngine 识别并重新编译 Shader。
+最后重新进入 Sandbox，随便打开一个 Level，可以看到 Shader 编译器服务器已经开始重新编译所有 Shader 了：
+1094 | 24/04 16:35:30 | Updating: GameSDK/ShaderList_PC.txt 1786 | 24/04 16:40:20 | Compiled [ 1128ms| 22s] (D3D11 vs_5_0) Common_SG_VS 1788 | 24/04 16:40:21 | Compiled [ 1156ms| 24s] (D3D11 vs_5_0) Common_SG_VS 1790 | 24/04 16:40:22 | Compiled [ 1174ms| 25s] (D3D11 vs_5_0) Common_ZPassVS 1792 | 24/04 16:40:24 | Compiled [ 2068ms| 27s] (D3D11 vs_5_0) Common_SG_VS 1794 | 24/04 16:40:27 | Compiled [ 2452ms| 29s] (D3D11 vs_5_0) Common_SG_VS 1796 | 24/04 16:40:29 | Compiled [ 2523ms| 32s] (D3D11 vs_5_0) Common_SG_VS 1798 | 24/04 16:40:32 | Compiled [ 2523ms| 34s] (D3D11 vs_5_0) Common_SG_VS 1800 | 24/04 16:40:34 | Compiled [ 2419ms| 37s] (D3D11 vs_5_0) Common_ZPrePassVS 1804 | 24/04 16:40:34 | Compiled [ 51ms| 37s] (D3D11 ps_5_0) Common_CustomRenderPassPS 1806 | 24/04 16:40:35 | Compiled [ 152ms| 37s] (D3D11 ps_5_0) IlluminationPS 1808 | 24/04 16:40:36 | Compiled [ 1364ms| 38s] (D3D11 ps_5_0) IlluminationPS 1810 | 24/04 16:40:36 | Compiled [ 84ms| 38s] (D3D11 ps_5_0) Common_DebugPassPS 1812 | 24/04 16:40:37 | Compiled [ 953ms| 39s] (D3D11 ps_5_0) IlluminationPS 1814 | 24/04 16:40:38 | Compiled [ 1012ms| 40s] (D3D11 ps_5_0) IlluminationPS 1816 | 24/04 16:40:38 | Compiled [ 109ms| 40s] (D3D11 ps_5_0) Common_ZPassPS 1818 | 24/04 16:40:39 | Compiled [ 555ms| 41s] (D3D11 ps_5_0) Common_CustomRenderPassPS .</description></item><item><title>GPU Pro 1 笔记 - Screen-Space Directional Occlusion</title><link>https://www.kindem.xyz/post/54/</link><pubDate>Sat, 02 Apr 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/54/</guid><description>SSDO 全称 Screen Space Directional Occlusion，可以看做一种实时 GI 算法，是 SSAO 的升级版。
+Ambient Occlusion (AO) 即环境光遮蔽是一种常见的提升表面细节的技术，基本思路是在 Mesh 表面预计算周围的遮挡信息，然后在计算光照的时候把遮蔽因子作为系数叠加到环境光上。遮蔽因子计算也比较简单，就是在表面上的一个半球区域内发射一系列射线，然后同级被遮挡的光线的数量即可。应用 AO 后，可以明显看到，表面的拐角处会变得更黑，从而体现出更真实的效果。
+AO 的计算比较耗，通常会为 Mesh 离线计算 AO 纹理，然后在运行时采样直接使用，下面这三张图分别是直接光照、AO 纹理、应用 AO 后的光照：
+因为 AO 纹理是预计算的，所以对于动态场景就没办法了。于是 SSAO (Screen Space Ambient Occlusion) 应运而生，在屏幕空间进行计算，在开销可以接受的情况下支持动态场景。SSAO 最早是 CryTek 提出的，并运用于自家的引擎 CryEngine 中，最初的 SSAO 算法是直接在屏幕空间表面的一个球形区域内随机进行一系列采样，然后把采样点的深度跟表面的深度相对比，如果在表面之下，则该采样对最终的遮蔽因子产生贡献。下面是盗的 LearnOpenGL 的图：
+但是这种算法实际效果不太好，会使得画面有一种灰蒙蒙的感觉：
+更好的做法是按照表面的法线取一个半球空间进行采样：
+这样效果会更好，但是无论如何，SSAO 有个致命的缺陷，就是它只考虑了遮挡关系，所以只能让拐角处 “更黑”，还是没办法记录光照信息。比如下面这张图，P 点附近有两个颜色不同的光源，按照遮挡关系，P 点应该会被绿光照亮，从而体现出绿色，而不是 SSAO 表现出来的黑色：
+SSDO 的提出就是为了解决这个问题，SSDO 在计算遮挡关系的同时还会考虑光照信息，从而让拐角处产生能带颜色的遮蔽效果：
+首先来看下 SSDO 怎么捕获直接光信息：
+我们在 P 点法线方向的一个半球空间中均匀散布一些采样点，用类似 SSAO 的方法，我们可以得知他们是在表面之上还是之下，如果在之上的话，就按照 P 点与采样点的连线方向采样 IrradianceEnvMap 即可，各个采样点的贡献累加后就是 P 点最终的直接光颜色。</description></item><item><title>GDC 笔记 - Quadtree Displacement Mapping with Height Blending</title><link>https://www.kindem.xyz/post/53/</link><pubDate>Tue, 15 Mar 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/53/</guid><description>原文链接：Quadtree Displacement Mapping with Height Blending
+目录
+下一代渲染的一些要素与目标。
+然而现实是现在的 Surface Rendering 差距甚远。
+地形的 Surface Rendering 是很费的，而且需要做混合，混合意味着不能拥有较高的几何复杂度。
+Surface 的几何细节包括体积、深度、各种频率的细节。他们结合起来可以产生一些其他的效果：深度视差、自阴影、光反应性。
+Surface Rendering 要实现光照交互依赖 Surface 的微观结构，目前已经有一些理论研究（比如烘焙 Terrance BDRF）了。要体现出几何的复杂性，可以通过修改三角面或者走光追。但是三角面相关的方法都比较费，比如直接增加面数，顶点的 Transform 和显存开销都会相应增加，更实用的做法是实用 Tessellation 在管线中倍增三角面。
+做这套方案的动机：
+应对不同的 Surface：地形、静态/动态物体 高性能：支持当前的硬件 最小化显存开销：开销与传统的 Normal Mapping 相当，能在当前的主机平台顺利运行 所以这套方案需要支持：
+获取任意角度下的精确深度 自阴影 AO 快速、准确的混合 效果对比图。
+现有的提高深度复杂度的解决方案无非两种：
+寻找真正的 Surface 的深度，即寻找 View Ray 和 Height Field 的真正交点 通过计算好的 Depth Offset 来进行光照计算 比如上面这张图，在无视高度细节的情况下交点实际上是错误的。
+正确的交点应该是图中虚线和 View Ray 的交点。
+一种做法是对 Height Field 数据做 Ray Tracing，这意味着额外的显存消耗。
+Relief Mapping (RM) 和 Parallax Oclussion Mapping (POM) 都是光追做法。</description></item><item><title>GDC 笔记 - 'Ghost Recon Wildlands': Terrain Tools and Technology</title><link>https://www.kindem.xyz/post/51/</link><pubDate>Mon, 21 Feb 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/51/</guid><description>原文链接：&amp;lsquo;Ghost Recon Wildlands&amp;rsquo;: Terrain Tools and Technology
+地图规格。
+11 种生态群落，140 种地表材质。
+河流面积与顶点。
+植被与石头。
+道路、贴花。
+铁路网。
+建筑与聚落。
+GPU 雕刻工具的介绍。
+基于 World Machine 开发了一套程序化生成的管线，用于自动生成高度图，作为后续地形编辑的 Input。
+美术规格。
+做了一个非常快速的 GPU-Based 的地形雕刻工具，最多可以一次雕刻 2km x 2km 的地块。
+对高度图做了分层，Base 层是 World Matchine 的输出，不会被改变，Editor 产生的修改被放到 Macro 层。DCC 层专门放置 Houdini 生成的修改，后面会具体讲。Micro 则存放关卡美术做的微小调整。
+地表。
+目标是生成真实、高质量的地表，然而这么大的地图纯手刷不可能搞定。
+尝试了一个简单的规则，按照地形的 Normal 做灰色到白色的插值，其实就能生成一个不错的山脉地表了，可以按照这个思路扩展地表的生成规则。
+最终定下来的用于程序化生成的参数有四个，坡度、高度、噪声、曲率，按照这几个参数在 Pixel Shader 里面实时计算。
+美术工具截图，修改参数就可以实时生成地表看到效果，非常方便。
+虽然现在可以一键生成地表了，但是有些过渡的地方还是显得不太自然。于是又支持了美术手刷地表。
+地表最终会被保存为两张纹理，分别叫 Splatting Texture (R8) 和 Vista Texture (BC5)，Splatting Texture 中保存了当前地表所对应的材质索引，Vista Texture 保存的是一个简单的 Albedo，用于远处地表的渲染。
+地块是按照四叉树存储的，每一个四叉树节点都带 Payload，包含 LOD、Culling、Streaming 信息。这些节点会根据距离相机的距离进行 Streaming In / Out。</description></item><item><title>GDC 笔记 - Terrain Rendering in 'Far Cry 5'</title><link>https://www.kindem.xyz/post/52/</link><pubDate>Mon, 21 Feb 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/52/</guid><description>原文链接：GDC Vault - Terrain Rendering in &amp;lsquo;Far Cry 5&amp;rsquo;
+地形 Heightfield 渲染。
+地图大小是 10km x 10km，分辨率 0.5m，地形按照四叉树管理，整个地形被划分成 2km x 2km 的地块，这些地块永久可见。
+上面说的 2km x 2km 的地块被按照四叉树划分成很多 Tile，这些 Tile 按照 LOD 以及与玩家的距离进行 Steaming，磁盘上存储的 Tiles 数量上万，但是实际上运行时加载进内存的 Tiles 数量大概在 500 左右。
+所有四叉树节点所需要的 Textures 会同步被 Streaming 进 Texture Atlases，节点中会记录对应 Atlases 中的位置。纹理格式：
+Heightmap: R16_UNORM, 129x129 World space normal map: BC3, 132x132 Baked albedo map: BC1, 132x132 地形的渲染大概这么几步。
+首先是四叉树节点的 Streaming，首先在 LOD0 找到离玩家最近的一圈节点。
+切换到下一级 LOD，按更大范围找四叉树中对应的节点。
+以此类推，直到最后一级 LOD，前面说到了，最后一级 LOD 对应的四叉树节点是永远被加载的。这里只演示了 3 级 LOD，实际上 Far Cry 5 里有 6 级。</description></item><item><title>UE5 地形系统初探</title><link>https://www.kindem.xyz/post/50/</link><pubDate>Sun, 05 Dec 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/50/</guid><description>使用的版本：UE5 Early Access
+地形系统介绍 UE 可以直接在编辑器中创建并编辑地形，编辑地形的模式有两种：Sculpt 和 Paint。
+Sculpt 的作用是对地形进行造型和雕刻，Sculpt 对地形产生的修改最终会体现在 Heightmap 即高度图中，UE 会在运行时对这张图进行采样，从而产生地形 Mesh，很经典的做法。 Paint 则可以让开发者对地表进行绘制，开发者可以创建多个 Landscape Layer，每一个 Layer 可以使用不同的纹理，比如雪地、草地、土壤等，在 Paint 模式下，用户可以选择不同的 Layer 对地形进行绘制，绘制完成后，会根据 Layer 的数量生成对应的 Weightmap 即权重图，其中保存了每一个 Layer 的权重，由于 Weightmap 有 RGBA 四个通道，一张 Weightmap 至多能保存四个 Layer，每四个 Layer 会额外生成一张 Weightmap，Layer 数量越多，显存消耗越大。在运行时，UE 会对当前地块的 Weightmap 和 Layer 纹理进行采样，并进行混合，最终形成地表。 在创建地形的时候，有 Section 的概念，Section 可以认为是一块地形，每一个地形 Component 可以选择保存 1x1 或者 2x2 块 Section，创建地形的时候，需要输入 Section 的大小和 Component 的数量，来决定最终地形的大小。
+要在 UE 中创建地形，需要先切换到 Landscape Editing Mode：
+Landscape Editing Mode 在 Manage 面板，我们可以输入参数创建新的地形：</description></item><item><title>GPU Pro 1 笔记 - As Simple as Possible Tessellation for Interactive Applications</title><link>https://www.kindem.xyz/post/49/</link><pubDate>Thu, 25 Nov 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/49/</guid><description>原文请参考 GPU Pro 1, Engel W . Chapter 1. As Simple as Possible Tessellation for Interactive Applications. 2010.
+笔记 文章提出了一种新的曲面细分方法，可以在运行时增加新的顶点，提高几何细节，被称为 Phong Tessellation，下面是普通渲染与曲面细分的对比图：
+Phong Shading / Phong Tessellation 在介绍 Phong Tessellation 之前，先介绍了一波前人的工作，首先是 Linear Tessellation：
+Linear Tesselation Expr 其中 Pi, Pj, Pk 为三角面片的三个顶点 Position，u, v, w 是一个可调整的权重值，满足 u + v + w = 1，P(u, v) 是生成的新的顶点的 Position，Linear Tessellation 可以在三角面片上生成一个新的顶点。但是在面片上生成新的顶点实际上并没啥用 &amp;hellip;.
+接着是按照类似的思路提出的 Phong Normal Tessellation，它的思路为新顶点产生插值的 Normal，从 Normal 的角度来丰富细节，公式和上面的类似，只是最后还要做一次 Normalize：
+Phong Normal Tessellation Expr 作者按照他们的思路，提供了一次非三角面片上的曲面细分，也就是开始说的 Phong Tessellation：</description></item><item><title>MSVC std::unique_ptr 源码解析</title><link>https://www.kindem.xyz/post/48/</link><pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/48/</guid><description>介绍 std::unique_ptr 是 c++ 11 添加的智能指针之一，是裸指针的封装，我们可以直接使用裸指针来构造 std::unique_ptr：
+struct TestStruct { int a; int b; }; class TestClass { public: TestClass() = default; TestClass(int a, int b) : a(a), b(b) {} private: int a; int b; }; std::unique_ptr&amp;lt;int&amp;gt; p0 = std::unique_ptr&amp;lt;int&amp;gt;(new int { 1 }); std::unique_ptr&amp;lt;TestStruct&amp;gt; p1 = std::unique_ptr&amp;lt;TestStruct&amp;gt;(new TestStruct { 1, 2 }); std::unique_ptr&amp;lt;TestClass&amp;gt; p2 = std::unique_ptr&amp;lt;TestClass&amp;gt;(new TestClass(1, 2)); 在 c++ 14 及以上，可以使用 std::make_unique 来更方便地构造 std::unique_ptr，参数列表需匹配创建对象的构造函数：
+std::unique_ptr&amp;lt;int&amp;gt; p0 = std::make_unique&amp;lt;int&amp;gt;(1); std::unique_ptr&amp;lt;TestStruct&amp;gt; p1 = std::make_unique&amp;lt;TestStruct&amp;gt;(TestStruct { 1, 2 }); std::unique_ptr&amp;lt;TestClass&amp;gt; p2 = std::make_unique&amp;lt;TestClass&amp;gt;(1, 2); 除了保存普通对象，std::unique_ptr 还能保存数组，这时 std::make_unique 的参数表示数组的长度：</description></item><item><title>使用 GitHub Actions 自动推送 URL 至百度站长平台</title><link>https://www.kindem.xyz/post/47/</link><pubDate>Thu, 02 Sep 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/47/</guid><description>序 起因就是最近在做新版博客 KindemBlog 的 SEO 优化，工作之后也没时间耐心地做引流了，看能不能想想其他方法稍微拯救下博客惨淡的 PV。
+印象中百度的自动推送 URL 功能在今年还是去年的时候翻新了一次，翻新后的 API 不再是 GET 请求，而是 POST，再加上辣鸡百度新 API 的 Host 给的协议是 HTTP，这么一来使用 HTTPS 协议的站点就直接暴毙，没法再通过前端来发送 Ajax 请求来推送了，这对静态博客用户（比如我）可是毁灭性打击。
+一番思考后，我想到了 GitHub Actions，没错，就没有 Actions 搞不定的事情。整个方案的思路是先写一个 JavaScript 脚本来完成博客仓库下所有博客的扫描，扫描完成后把所有 URL 通过 POST 请求上报到百度的服务器去，然后再用 GitHub Actions 每日定时执行脚本即可。
+扫描与推送脚本 其实用 Python 写也可以，但一想到这又是一个展现我非凡的 JavaScript 技术的时候，就有点小激动，果断在博客根目录下：
+npm init 之后先把依赖安装一哈：
+npm install axios 然后编写脚本，放在 /scripts/baidu-auto-commit.js：
+const Axios = require(&amp;#39;axios&amp;#39;); const FileSystem = require(&amp;#39;fs&amp;#39;); const config = { postDir: &amp;#39;content/post&amp;#39;, basePostUrl: &amp;#39;https://www.kindem.xyz/post&amp;#39;, targetHost: &amp;#39;http://data.zz.baidu.com/urls?site=https://www.kindem.xyz&amp;amp;token=lDsJO81mKXxekZI6&amp;#39;, fixedUrls: [ &amp;#39;https://www.</description></item><item><title>MSVC std::any 源码解析</title><link>https://www.kindem.xyz/post/46/</link><pubDate>Sat, 28 Aug 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/46/</guid><description>std::any 介绍 std::any 是 c++17 标准新提供的类，作用是存储任意类型的一段内存，并可以重复赋值，在赋值后可以使用 std::any_cast 将 std::any 所存储的值转换成特定类型，如果 std::any 中存储的值的类型与目标类型不匹配，则会抛出 std::bad_any_cast 异常。
+下面是一些简单的 Sample Code（MSVC 16 2019 64Bit 运行）：
+std::any value = 1.0; // 1 std::cout &amp;lt;&amp;lt; any_cast&amp;lt;double&amp;gt;(value) &amp;lt;&amp;lt; std::endl; // 抛出 std::bad_any_cast 异常 std::cout &amp;lt;&amp;lt; any_cast&amp;lt;float&amp;gt;(value) &amp;lt;&amp;lt; std::endl; // 抛出 std::bad_any_cast 异常 std::cout &amp;lt;&amp;lt; any_cast&amp;lt;int&amp;gt;(value) &amp;lt;&amp;lt; std::endl; 指针示例：
+std::any value1 = nullptr; // nullptr std::cout &amp;lt;&amp;lt; any_cast&amp;lt;nullptr_t&amp;gt;(value1) &amp;lt;&amp;lt; std::endl; // 抛出 std::bad_any_cast 异常 std::cout &amp;lt;&amp;lt; any_cast&amp;lt;int*&amp;gt;(value1) &amp;lt;&amp;lt; std::endl; std::any value2 = (int*) (nullptr); // 抛出 std::bad_any_cast 异常 std::cout &amp;lt;&amp;lt; any_cast&amp;lt;nullptr_t&amp;gt;(value2) &amp;lt;&amp;lt; std::endl; // 0000000000000000 std::cout &amp;lt;&amp;lt; any_cast&amp;lt;int*&amp;gt;(value2) &amp;lt;&amp;lt; std::endl; 空 std::any 示例：</description></item><item><title>C++ 模板黑魔法 —— 编译期序列与 std::tuple 遍历</title><link>https://www.kindem.xyz/post/45/</link><pubDate>Fri, 06 Aug 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/45/</guid><description>编译期序列 最近看到一个很有意思的模板写法：
+template &amp;lt;size_t... S&amp;gt; struct IndexSequence {}; template &amp;lt;size_t N, size_t... S&amp;gt; struct IndexSequenceMaker : public IndexSequenceMaker&amp;lt;N - 1, N - 1, S...&amp;gt; {}; template &amp;lt;size_t... S&amp;gt; struct IndexSequenceMaker&amp;lt;0, S...&amp;gt; { using Type = IndexSequence&amp;lt;S...&amp;gt;; }; template &amp;lt;size_t N&amp;gt; using MakeIndexSequence = typename IndexSequenceMaker&amp;lt;N&amp;gt;::Type; 乍一看啥玩意儿，仔细看会发现它的作用是生成一个编译期序列，如：
+// IndexSequence&amp;lt;0, 1, 2, 3, 4&amp;gt; MakeIndexSequence&amp;lt;5&amp;gt; 它的实现非常巧妙，我们以上面这个例子为切入点，按照它的思路去展开模板：
+template &amp;lt;&amp;gt; struct IndexSequenceMaker&amp;lt;0, 0, 1, 2, 3, 4&amp;gt; { using Type = IndexSequence&amp;lt;0, 1, 2, 3, 4&amp;gt;; } template &amp;lt;&amp;gt; struct IndexSequenceMaker&amp;lt;1, 1, 2, 3, 4&amp;gt; : public IndexSequenceMaker&amp;lt;0, 0, 1, 2, 3, 4&amp;gt; {} template &amp;lt;&amp;gt; struct IndexSequenceMaker&amp;lt;2, 2, 3, 4&amp;gt; : public IndexSequenceMaker&amp;lt;1, 1, 2, 3, 4&amp;gt;; template &amp;lt;&amp;gt; struct IndexSequenceMaker&amp;lt;3, 3, 4&amp;gt; : public IndexSequenceMaker&amp;lt;2, 2, 3, 4&amp;gt;; template &amp;lt;&amp;gt; struct IndexSequenceMaker&amp;lt;4, 4&amp;gt; : public IndexSequenceMaker&amp;lt;3, 3, 4&amp;gt;; template &amp;lt;&amp;gt; struct IndexSequenceMaker&amp;lt;5&amp;gt; : public IndexSequenceMaker&amp;lt;4, 4&amp;gt; {} template &amp;lt;&amp;gt; using MakeIndexSequence&amp;lt;5&amp;gt; = typename IndexSequenceMaker&amp;lt;5&amp;gt;::Type; 秒懂了，利用继承关系来传递不断生成的序列可变参，最后以 N = 0 的特化来终止生成。</description></item><item><title>Explosion 开发笔记 (四)</title><link>https://www.kindem.xyz/post/44/</link><pubDate>Tue, 20 Jul 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/44/</guid><description>前两个月在 Explosion 上下了不少功夫，好几周双休都抽出了一整天来开发引擎、做之后的设计，平日里下班了也是第一时间埋着头就开始写。直到这两周，Explosion 又暂停了下来，主要因为去杭州出差了，项目比较忙，没什么时间写。
+今天下班比较早，想起来了该要写笔记了，就提笔记录记录。
+近期进展 System / SystemGroup / SystemGraph ECS 框架我们是直接引用的 EnTT，但 EnTT 只提供了 Entity、Component 的概念，没有直接提供 System，它的本意是只负责 ECS 框架中最困难的内存管理部分，所以 System 的概念需要自己封装。
+在基础的 System 定义上，我们稍作了简化，并添加了 SystemGroup 和 SystemGraph 的概念，他们的定义如下：
+System：一个 Lambda 表达式，即代表一段可执行的逻辑。 SystemGroup：保存了一组 System 和一个 SystemGraph。 SystemGraph：描述了 SystemGroup 内部 System 之间的依赖关系。 另外，他们遵循如下规则：
+World#Tick() 会更新所有 SystemGroup，SystemGroup 具有优先级，SystemGroup 之间会按照优先级串行更新。 SystemGroup 内部的所有 System 会按照 SystemGraph 编译成一个 TaskFlow，用于描述一个更新任务。 TaskFlow Execute 的时候有依赖关系的 System 会进行软同步，按照先后顺序执行，没有依赖关系的 System 会并行执行。 System 之间可以拥有共享内存，也使用 Component 实现，我们称之为 SharedComponent，SystemGraph 产生的依赖关系可以保证这块内存的同步访问。 下面是部分定义以及 World#Tick() 的部分代码：</description></item><item><title>GitHub Avatar Generator 重构计划</title><link>https://www.kindem.xyz/post/43/</link><pubDate>Sun, 04 Jul 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/43/</guid><description>每一个程序员都应该有机会重写三年前写下的代码 —— 鲁迅
+起因 GitHub 风格头像生成器 是我三年前写下的一个 Java 小程序，它的功能很简单，就是生成 GitHub 风格的头像。下午逛 GitHub 的时候突然看到之前写的辣鸡代码，工程管理和使用的库也相当混乱。
+离谱的事情是居然还有 30 来个小星星，一时间感觉受之有愧，决定花一个下午推倒重写 &amp;hellip;&amp;hellip;
+分析 首先是工程管理上的，老的工程是直接基于 IDEA 的默认 Java 工程搭建的，构建运行都相当依赖 IDEA，如果要命令行编译运行对不了解这块的网友来说还有有点麻烦的。我的想法是使用 Gradle 来进行工程管理，这样无论是命令行还是 IDE，构建和运行都相当方便。
+其次，使用的库非常离谱，三年前的我引入了 OpenCV 做图片读写，我现在也没法揣摩三年前的我出于何考虑，果断放弃，直接使用 Java 自带的 ImageIO 和 BufferedImage 替代。
+另外，原来的代码是写死输出文件的，也不支持自定义随机种子的配置。我决定在这次重构中添加这些功能。
+细节 命令行参数解析 命令行参数解析我直接使用的 Apache 的轮子 commons-cli，主程序就稍微写一丢丢代码就能完成解析：
+public class Main { public static void main(String[] args) { Options options = new Options(); options.addOption(Option.builder(&amp;#34;o&amp;#34;).longOpt(&amp;#34;output&amp;#34;).hasArg().required().type(String.class).desc(&amp;#34;output file&amp;#34;).build()); options.addOption(Option.builder(&amp;#34;s&amp;#34;).longOpt(&amp;#34;seed&amp;#34;).hasArg().required().type(String.class).desc(&amp;#34;seed string&amp;#34;).build()); CommandLineParser commandLineParser = new DefaultParser(); CommandLine commandLine = null; try { commandLine = commandLineParser.</description></item><item><title>std::tuple 学习笔记</title><link>https://www.kindem.xyz/post/42/</link><pubDate>Mon, 28 Jun 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/42/</guid><description>std::tuple 是泛化的 std::pair，用于存储一组任意类型的数据，可以通过 std::get 来访问其元素：
+int main(int argc, char* argv[]) { std::tuple&amp;lt;int, double, std::string&amp;gt; tuple = std::make_tuple(1, 2.0, &amp;#34;hello&amp;#34;); std::cout &amp;lt;&amp;lt; std::get&amp;lt;0&amp;gt;(tuple) &amp;lt;&amp;lt; std::endl; std::cout &amp;lt;&amp;lt; std::get&amp;lt;1&amp;gt;(tuple) &amp;lt;&amp;lt; std::endl; std::cout &amp;lt;&amp;lt; std::get&amp;lt;2&amp;gt;(tuple) &amp;lt;&amp;lt; std::endl; } 也可以使用类型来查找元素：
+int main(int argc, char* argv[]) { std::tuple&amp;lt;int, double, std::string&amp;gt; tuple = std::make_tuple(1, 2.0, &amp;#34;hello&amp;#34;); std::cout &amp;lt;&amp;lt; std::get&amp;lt;int&amp;gt;(tuple) &amp;lt;&amp;lt; std::endl; std::cout &amp;lt;&amp;lt; std::get&amp;lt;double&amp;gt;(tuple) &amp;lt;&amp;lt; std::endl; std::cout &amp;lt;&amp;lt; std::get&amp;lt;std::string&amp;gt;(tuple) &amp;lt;&amp;lt; std::endl; } 如果 std::tuple 中具有两个以上的相同类型的元素，则不能使用该类型进行查找：
+int main(int argc, char* argv[]) { std::tuple&amp;lt;int, int, std::string&amp;gt; tuple = std::make_tuple(1, 2, &amp;#34;hello&amp;#34;); // 编译期错误 std::cout &amp;lt;&amp;lt; std::get&amp;lt;int&amp;gt;(tuple) &amp;lt;&amp;lt; std::endl; std::cout &amp;lt;&amp;lt; std::get&amp;lt;int&amp;gt;(tuple) &amp;lt;&amp;lt; std::endl; std::cout &amp;lt;&amp;lt; std::get&amp;lt;std::string&amp;gt;(tuple) &amp;lt;&amp;lt; std::endl; } 可以使用 std::tie 来对 std::tuple 进行解包：</description></item><item><title>Conventional Commits 介绍</title><link>https://www.kindem.xyz/post/41/</link><pubDate>Sun, 27 Jun 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/41/</guid><description>介绍 Conventional Commits Conventional Commits (下称 CC) 是一套 git commit message 的规范，旨在让 commit message 能同时被人类和机器所接纳，也就是说满足可读性的同时增强规范性，它的官网在这里: Conventional Commits。
+目前来看 CC 标准已经被越来越多的人所接受，很多开源项目也积极采纳并推广这套标准（比如 Ant-Design、NaiveUI）。
+实话说我之前经常看到过这种 commit message 的写法，但是我还真不知道这种写法有一套专门的标准，偶然间逛 GitHub 发现了这个，决定好好学习一下，这样能帮助自己更好地融入开源社区。
+规范详解 CC 规范最重要的莫过于 git commit message 的格式：
+&amp;lt;type&amp;gt;[optional scope]: &amp;lt;description&amp;gt; [optional body] [optional footer(s)] 按照这种写法的优点在于 git 历史记录会相当规范，这很适合一些自动化工具去解析、生成这些提交信息，同时又不失可读性。
+其中 type 字段用于传达本笔提交大致的内容：
+fix 表示提交用于修复 bug feat 表示提交用于添加新功能 build 表示提交修改了构建系统或者外部依赖 ci 表示提交修改了持续构建、持续部署配置或脚本 docs 表示提交修改了文档 perf 表示提交进行了性能优化 refactor 表示提交进行了重构 style 表示提交修改了代码格式问题 test 表示提交添加或修改了测试用例 BREAKING CHANGE 表示提交进行了不兼容修改，需要在脚注中使用 type 字段后面还可以跟上 scope 以表示更精确的行为，如 feat(parser): add ability to parse arrays。</description></item><item><title>Explosion 开发笔记 (三)</title><link>https://www.kindem.xyz/post/40/</link><pubDate>Thu, 27 May 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/40/</guid><description>进展概览 Repo 建设 先说说最近的进展吧，首先是 Repo 方面的建设，README 先写起来占坑了，顺便随手自己画了张 logo 图上丢上去占坑，可以简单看看现在的 README：
+README 回头还需要把中文版的 README 和其他的细节慢慢补起来，不过我们现在真没太多人力投入这块，要做的东西太多了，之后把引擎本身完善的差不多了之后再慢慢弄吧。
+工程管理 我们在团队内推崇大家使用 Issues 来交流、跟踪进展，使用 Project 来管理整个项目，大概效果是这样：
+Issues Project 提交 Issues 会自动关联到 Project，MR 中需要关联对应的 Issues，在 MR 关闭时，Issues 会自动跟随 MR 关闭，并移动到 Project 的 Done 一栏，这样我们就能方便地跟踪需求和进展。
+CI CI 方面我们目前使用的是 GitHub Actions，不得不说这玩意可塑性要比其他的 CI/CD 工具强很多，写起来也是比较方便的，目前 CI 就配置了一个 cmake 构建，覆盖平台有：
+Ubuntu Windows 具体的代码在这：Actions Code，提交 MR 后自动触发，构建结果可以在 Actions 查询：
+Action Result 构建通过是合入的硬性指标。其实我在纠结 MacOS 要不要加，因为实际上从构建来说，MacOS 的编译器和 GCC 还是比较一致的，一般不会出什么大岔子，后面再说吧。
+构建系统优化 我抽空对所有的 CMake 进行了一次重构，主要做的事情是把常用的一些基本 CMake 指令做了一次封装，主要涉及：</description></item><item><title>醒醒吧，静态多态根本没有这么香</title><link>https://www.kindem.xyz/post/39/</link><pubDate>Sun, 16 May 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/39/</guid><description>CRTP CRTP 全称 Curiously Recurring Template Pattern，即奇异递归模板模式，是一种经典的 C++ 设计模式，听起来很反人类，我们先来看一段代码：
+#include &amp;lt;iostream&amp;gt; template &amp;lt;class T&amp;gt; class Base { public: void Foo() { static_cast&amp;lt;T*&amp;gt;(this)-&amp;gt;FooImpl(); } }; class Child1 : public Base&amp;lt;Child1&amp;gt; { public: void FooImpl() { std::cout &amp;lt;&amp;lt; &amp;#34;hello1&amp;#34; &amp;lt;&amp;lt; std::endl; } }; class Child2 : public Base&amp;lt;Child2&amp;gt; { public: void FooImpl() { std::cout &amp;lt;&amp;lt; &amp;#34;hello2&amp;#34; &amp;lt;&amp;lt; std::endl; } }; template &amp;lt;class T&amp;gt; void Print(Base&amp;lt;T&amp;gt;&amp;amp; base) { base.Foo(); } int main(int argc, char* argv[]) { Child1 child1; Child2 child2; Print(child1); Print(child2); } 这是一个 CRTP 的典型使用场景 —— 静态多态，其实很容易理解，如果需要在编译期让父类的某个方法调用子类的方法，那必然需要让父类能够感知到子类的类型信息，因为你需要将 this 指针转换成子类指针才能调用对应方法。</description></item><item><title>Web 杂记 | 为什么我称这个 Web 时代是静态页面的文艺复兴？</title><link>https://www.kindem.xyz/post/38/</link><pubDate>Tue, 11 May 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/38/</guid><description>SPA 它真的香吗？ 我喜欢用三个里程碑来界定目前 Web 发展的历史：
+HTML + CSS + JavaScript 模式的诞生 -&amp;gt; 静态页面时代 Server-Side-Render (SSR) 的诞生 -&amp;gt; 动态页面时代 React / Vue / Angular 的普及 -&amp;gt; SPA 时代 在远古时期，网页的组成其实非常简单，简单来说以前的服务器其实就是简单的文件服务器，上面只存放 HTML、CSS、JavaScript 文件，而用户通过浏览器去访问页面，实际上就是把文件下载下来跑起来而已。
+SSR 的诞生，催化了 Web 的极速发展，实际上跟静态页面的变化只是之前固定的 HTML 页面变成了由服务器根据模板引擎动态拼接 HTML 字符串返回而已，但仅仅是这么一点变化，就让原本静态的网页，产生了丰富多彩的组合，各种论坛像雨后春笋一样狂野生长，这段时间也诞生了一大批轮子，WordPress、JavaWeb、.NetWeb，可以说这些轮子是那个年代 Web 人的烂漫。
+近几年 React / Vue 一类的 SPA 框架出来之后，可以说一时间前端界为之癫狂，再加上 Node.js / NPM 生态的繁荣，一时间乱花渐欲迷人眼，所有人都被 SPA 惊艳到了。
+所谓 SPA，全称 Single-Page-Application，简单来说就是把部分以前 Server-Side 做的事情放到了 Browser-Side，服务器只负责把静态资源 (HTML, CSS, JavaScript, Images) 打包好返回给前端，然后由前端自己来进行 HTML Document 的渲染。
+从架构上来看，SPA 简直酷炫无比，因为它的设计原则是把整个网站当成一个应用来看待，加载站点的过程实际上就像下载一个资源包，下载好资源包之后就把控制权完全交由应用，让应用自己负责，服务器只负责提供资源和处理一些 Ajax 数据请求。</description></item><item><title>Explosion 开发笔记 (二)</title><link>https://www.kindem.xyz/post/37/</link><pubDate>Tue, 04 May 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/37/</guid><description>第一个三角形！ 先说说近期的进展吧，最大头的成果就是趁着五一假期把 VulkanDriver 基本写完了，经典三角形：
+Triangle 基本的接口封的差不多了，后面的小问题再慢慢修修补补吧。
+然后就是工程建设方面的，差不多这段时间把这些东西搞起来了：
+CI (GitHub Action) 三方库 Git SubModule 支持 README / WiKi 单元测试框架本来想加上，但想到目前也只有 Driver，没什么写 UT 的必要性，想想也就算了，等到后面慢慢有需要再加吧，反正集成 UT 框架也就是几行 CMake 的事情。
+接下来要做的是 RPI、Runtime、场景管理等，还得把预置的 Components、Systems 给加上，总之好好加油吧。
+不省心的 RHI RHI 是写引擎绕不开的巨坑，时常想吐槽这么多 API，你们相互之间打一架好不好，这么多年了也一直搞不出一个统一的 API，各个平台都想围绕自己打造封闭的生态。
+写 RHI 最难的事情就是要拿一套统一的接口去封装多个图形 API，于是乎割舍功能和删删改改变成了常态，称 RHI 为脏活累活一点不过分。对各个 API 的了解程度将直接决定 RHI 最终接口的实用程度。
+别的很多东西其实可以借鉴老哥们，但是针对 RHI 这层来说，老大哥们的封装其实也不咋地，因为以前的 API 粒度毕竟是较 High Level 的（如 OpenGL、DX9 一类的），很多情况下无法发挥完全能效，再或者看看 CryEngine，索性直接 typedef 实现多态，硬生生把 RHI 和 RPI 糊在一起，只要我没有 RHI，最不存在烦恼，嗯，没毛病。
+之前也听同事吐槽过，自己造引擎如果从底层开始写，写到最后发现自己删了好几遍代码，写来写去最后还是一个三角形，上面的啥也没写。
+我目前的想法是先按照 Vulkan 的概念简单封装后搭建 Driver 的公共接口，这样上面的 RPI 和游戏逻辑框架也可以先写起来了，日后再慢慢补充 DX12Driver 和 MetalDriver。</description></item><item><title>MacOS 编译 RenderDoc</title><link>https://www.kindem.xyz/post/36/</link><pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/36/</guid><description>安装依赖 需要安装的依赖如下：
+autoconf automake Qt5 其中 Qt5 是 RenderDoc 的界面库，autoconf 和 automake 在构建 c 胶水层生成工具 swig 会使用到。
+我们可以直接使用 brew 依次安装所有依赖：
+brew install autoconf brew install automake brew install qt5 完成安装后，还需要配置一下 Qt5 的 bin 目录到 PATH 中：
+export PATH=&amp;#34;/usr/local/opt/qt@5/bin:$PATH&amp;#34; 编译 RenderDoc 首先下载源码，可以直接去 github 下载最新的 release 版本：GitHub - RenderDoc：
+RenderDoc - Downloads 下载完成后解压：
+tar -xvf renderdoc-1.13.tar.gz 完成后进入 RenderDoc 源码目录使用 CMake 开始构建：
+cd renderdoc-1.13 mkdir build cd build cmake .. cmake --build . -j 16 建议构建时开启 VPN，因为会去墙外下载他们修改过的 swig 源码并当场构建，网络不好可能会构建失败。</description></item><item><title>Explosion 开发笔记 (一)</title><link>https://www.kindem.xyz/post/35/</link><pubDate>Thu, 15 Apr 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/35/</guid><description>Explosion 是我新开发的游戏引擎，GitHub 地址在这里： Explosion，预计是一个大大的工程，我也将持续开发与维护，欢迎志同道合的朋友加入与我一同创造新的游戏秩序。我会在博客中持续更新自己开发过程中的一些心得与思考，欢迎大家关注，Explosion 的故事将由此开始。
+为什么要做 Explosion 其实早在上大学那会，我就对计算机图形学和游戏开发有着浓厚的兴趣，大一的时候使用过 Unity 和 Unreal 开发过游戏，在计算机图形学课程设计中，也使用过 OpenGL 2.0，当时大二大三那会接触到了 Web 开发，后来就一直沉迷于 Web 无法自拔了。
+机缘巧合下，我的工作却恰好又是跟图形学相关，第一次接触可编程渲染管线（那会是使用 OpenGL）的时候，我仿佛打开了新世界的大门，复杂的游戏场景原来都是由这样的原语构成。
+加上自己的兴趣爱好（当然是电子游戏！）使然，组织架构调整的时候我毅然加入了实验室的渲染引擎组，开始参与渲染引擎的开发。
+再后来我接触到了 Vulkan、DX12、Metal 等更现代的 GraphicsAPI，同时也逐渐了解了硬件的工作原理，也逐渐理解了游戏底层神秘的引擎到底是怎么运作的，兴趣越来越浓。
+俗话说的好，认识一门技术最好的方法就是造轮子，于是我义务反顾地投入了游戏引擎开发大军。
+谈谈前辈们 我心目中的游戏引擎一哥当然是 Unreal，老二是 Unity，全封闭的引擎生态这里就不提了。
+Unreal 的优点当然是不需要做很多的额外开发，就能获得相当不错的画质效果，相反，缺点则是如果你不是很懂一些渲染的原理，Unreal 对你将会很不友好，很多时候，读它给的文档不如直接读源码。另外如果要加一些自己的扩展特性的话，一旦涉及到渲染管线，大概率要改代码然后再源码编引擎，不过，Unreal 自己的意思也很明确了，老子开源，给你看你不会改，怪谁？
+Unity 的话，对开发者的友好程度就要好很多了，文档、资料、教程相当多，C# 写起来也相对比较舒服。Unity 的画质不自己搞的话也就那样了，不过 Unity 也说了，我扩展性这么高，你自己不会写，怪谁？
+另外，值得一提的是，针对新的游戏架构 ECS，Unity 在这方面应该算是先驱了，自己已经弄了一套 ECS 的 Preview 接口了，有空可以详细聊聊 Unity 的 ECS。
+Unreal 和 Unity 的源码我都读过一部分，Unreal 和 Unity 只能说这种体量的东西是工程界的奇迹，只要架构没有腐坏到无可救药的程度，哪怕局部屎再多也能糊住，多数情况下，它们的代码看起来就是微观来看简直屎的不行，但从宏观架构来看还能过得去。
+再下来我了解到的一些引擎有 CryEngine、Cocos、Godot、KlayGE 等。
+CryEngine 的代码简直可以用灾难来形容，在其上搭建的 Amazon Lumberyard 也是一个灾难，相信我，只要你看一眼它的 CD3D9Renderer 你就知道我在说什么了。CryEngine 的文档也很差劲，不过好像它的忠实拥趸还挺多，但据我所知，买过它来做游戏的育碧和 EA 都跑路了，CryEngine，把你弄哭的引擎。</description></item><item><title>UnrealEngine4 源码剖析 (二) 垃圾回收</title><link>https://www.kindem.xyz/post/34/</link><pubDate>Tue, 16 Feb 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/34/</guid><description>1. 垃圾回收 垃圾回收（ GC ）可以说是现代编程语言的标配，GC 简单来说就是语言运行时自动判别申请的内存是否还在被使用，判断内存无用后则自动回收内存。内存管理从来就不是什么容易事，需要手动管理内存实际上也是 C/C++ 入门门槛高的一大原因，稍有不慎就会造成内存泄露。
+UnrealEngine4 在自己的 Runtime 中实现了 GC 功能，所有使用 NewObject() 或 LoadObject() 方法创建的对象都会受 GC 系统的管制，当对象无用后将会自动释放。
+2. UE4 GC 源码阅读 首先我们要知道，在 UE4 中，是不能通过 C++ 内置的操作符 new 来创建对象的，使用 new 创建的对象将不受 UE4 Runtime 的控制，正确的做法是使用 NewObject() 或者 LoadObject() 方法创建或加载对象。
+首先我们需要知道，当使用 NewObject() 创建对象后，真正的内存将会被保存至一个全局数组中，另外还需要在一个全局 Hash 表中保存一些其他信息，这部分代码在 /Engine/Source/Runtime/CoreUObject/Private/UObject/UObjectHash.cpp，我们需要关注两个关键信息：
+FUObjectArray GUObjectArray; class FUObjectHashTables { // ... static FUObjectHashTables&amp;amp; Get() { static FUObjectHashTables Singleton; return Singleton; } } 其中 GUObjectArray 就是全局对象数组，而 FUObjectHashTables 是一个单例，类内部维护了几张 Hash 表，存储了对象之间的关系。我们先看 GUObjectArray，它的类型是 FUObjectArray：</description></item><item><title>UnrealEngine4 源码剖析 (一) UObject 概览及反射系统</title><link>https://www.kindem.xyz/post/33/</link><pubDate>Wed, 10 Feb 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/33/</guid><description>1 自省、反射 我们先来看一下 Java 中的反射机制定义：
+Java 反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意方法和属性。
+定义的前半句即自省，而后半句即反射。使用 UE4 的朋友应该大多数都是 C++ 开发者，但是如果大家使用过一些 C++ 之外的现代语言，就会明白自省和反射的重要性。
+自省与反射的用途非常广泛，比如很多语言（如 Python）的命令行脚本解释器、对象的自动序列化（通过自省遍历属性并依次序列化）、QT 的信号槽等，都是基于自省与反射实现的。
+仔细想一想，其实要实现语言层面的自省与反射，是很简单的，只需要在编译字节码 / 二进制的时候额外写入类、属性、方法的类型信息即可。但是 C++ 由于年龄实在太大，在设计之初并没有考虑如此基础的功能，以至于到现在为止，C++ 也没在标准中提供自省与反射的语言支持。
+但是人们的智慧是无穷无尽的，很多使用 C++ 构建的软件都会选择自己实现一套反射系统。目前已知的套路有两种：
+手动注册类型信息 预编译器生成类型信息 手动注册类型信息就显得很简单粗暴了，这里有一个有名的库，叫做 rttr，上一段代码，你就秒懂他的原理了：
+#include &amp;lt;rttr/registration&amp;gt; using namespace rttr; struct MyStruct { MyStruct() {}; void func(double) {}; int data; }; RTTR_REGISTRATION { registration::class_&amp;lt;MyStruct&amp;gt;(&amp;#34;MyStruct&amp;#34;) .constructor&amp;lt;&amp;gt;() .property(&amp;#34;data&amp;#34;, &amp;amp;MyStruct::data) .method(&amp;#34;func&amp;#34;, &amp;amp;MyStruct::func); } 这里使用 rttr 库注册了一个名为 MyStruct 的结构体，代码很简单，就是在一个静态块中手动注册了 MyStruct 的属性与方法。在完成注册之后，就可以开始经典的反射操作了，如遍历属性：
+type t = type::get&amp;lt;MyStruct&amp;gt;(); for (auto&amp;amp; prop : t.</description></item><item><title>使用 PlantUML 享受流式绘图</title><link>https://www.kindem.xyz/post/32/</link><pubDate>Wed, 10 Feb 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/32/</guid><description>PlantUML 介绍 PlantUML 是一款优秀的 UML 图绘制工具，使用它可以方便快捷地绘制 UML 图。我个人认为它的存在意义与 Markdown 非常相似，Markdown 的功能是流式描述文档，而 PlantUML 的功能是流式描述 UML 图，用户只需要把精力放在 UML 图的描述上，而无需关心排版。
+PlantUML 使用 Graphviz 作为 绘图引擎，通过 PlantUML 语言来构建 UML 图逻辑，稍后我们将做详细介绍。
+PlantUML 绘图环境搭建 首先，我们需要安装绘图引擎 Graphviz，官网在这：Graphviz，可以选择源码编译或者二进制包，我自己使用的操作系统是 MacOS，所以这里直接使用 brew 工具安装：
+brew install graphviz 完成安装后，我们来搭建 PlantUML 环境，PlantUML 官方针对不同的编辑器提供了不同的插件，我自己使用的是 Visual Studio Code，在扩展中寻找 PlantUML 并安装即可：
+PlantUML Extension 到这里 PlantUML 绘图环境的搭建就完成了。
+开始绘图 PlantUML 官方的语法说明在这：PlantUML，支持的 UML 图种类有很多，这里以序列图为例，给一个简单的例子：
+@startuml A -&amp;gt; B : hello() B -&amp;gt; C : hello2() B &amp;lt;-- C A &amp;lt;-- B @enduml 新建一个文件并在其中贴上上面这段，敲 Ctrl + Shift + P (MacOS 用户是 Command + Shift + P)，然后键入 PlantUML，选择 Preview Current Diagram 项并回车，就可以看到 UML 图效果了：</description></item><item><title>JetBrains 激活黑科技 - Open Source License</title><link>https://www.kindem.xyz/post/31/</link><pubDate>Tue, 19 Jan 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/31/</guid><description>💡 背景 随着 JetBrains 查水表越来越严，各种 License Server、激活码都不管用了，而我是重度 JetBrains 用户，离开 JetBrains 系列 IDE 直接寸步难行。俗话说的好：“早买早享受，晚买免费送。”我可一定要找一个能让 JetBrains 官方送我 License 的方法。
+经过一番寻找之后，我发现了 JetBrains Open Source Project，看页面最底端：
+Open Source License 简单来说就是只要你是一个符合条件的开源项目贡献者，你就可以获得免费的 License。
+🍙 申请 Open Source License 进入 Open Source License 页面：
+Request 可以看见，对项目的要求有：
+满足开源项目的定义 项目启动至少三个月，并且三个月内必须有积极的提交 项目正在积极开发中 项目不能从属于商业公司或组织 项目不能提供商业服务 对申请人的要求有：
+不能贿赂项目的核心开发者 是项目的创建者或者核心贡献者 只能使用 License 开发非商业项目 不能分享 License License 的有效期为一年，一年后可以酌情延长。我们可以进入 Open Source License Request 页面开始填写申请：
+Request 需要填写的内容有：
+项目名 项目使用的语言 项目年限 项目主页 项目仓库地址 项目 License 地址 国家 / 地区 申请 License 数量 项目描述（小作文） 邮箱 姓名 GitHub 主页 填写完成之后提交即可，一到两周后 JetBrains 会发送邮件告知申请结果。</description></item><item><title>使用 Emailjs 发送邮件</title><link>https://www.kindem.xyz/post/30/</link><pubDate>Thu, 14 Jan 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/30/</guid><description>💡 背景 突然需要一个后端发送邮箱验证码的功能，我使用的后端框架是基于 Node.js 搭建的，所以准备找一个合适的能够调用 SMTP 服务发送邮件的轮子。
+一番寻找之后，我找到了 emailjs，下面简单介绍一下用法。
+📦 安装 最经典的 npm/yarn 安装：
+# Yarn yarn add emailjs # Npm npm install emailjs 📮 配置邮箱 接下来需要一个可以使用的邮箱账户，因为我不准备以个人邮箱发送验证码，我使用了免费的 腾讯企业邮箱，注册了一个企业账户，当然你可以使用任意支持 SMTP 服务的邮箱。
+接下来需要在邮箱后台配置开启 SMTP 服务：
+Email Config 有一些邮箱对于三方客户端采取了高级的安全登录策略，不允许直接使用密码登录，而是使用 token，腾讯企业邮箱就采取了这样的方案：
+Login Config 这时候我们需要生成一个新的 token 用于 emailjs 使用 SMTP 服务：
+Token Generate 复制客户端密码，准备使用 emailjs 发送邮件。
+🎯 Emailjs 使用 emailjs 是基于 SMTP 服务发送邮件的，我们需要先查询对应邮箱服务器的 SMTP 服务端口与地址，腾讯企业邮箱有一个 配置指南，通过配置指南我们可以得到以下信息：
+SMTP 发送服务器地址：smtp.exmail.qq.com 端口号：465 SSL：开启 接下来编写 Node.js 代码：
+const { SMTPClient } = require(&amp;#39;emailjs&amp;#39;); const client = new SMTPClient({ user: `${senderEmail}`, password: `${password}`, host: &amp;#39;smtp.</description></item><item><title>浅谈 Android 插件化原理</title><link>https://www.kindem.xyz/post/29/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/29/</guid><description>🔌 认识插件化 想必大家都知道，在 Android 系统中，应用是以 Apk 的形式存在的，应用都需要安装才能使用。但实际上 Android 系统安装应用的方式相当简单，其实就是把应用 Apk 拷贝到系统不同的目录下、然后把 so 解压出来而已。
+常见的应用安装目录有：
+/system/app：系统应用 /system/priv-app：系统应用 /data/app：用户应用 那可能大家会想问，既然安装这个过程如此简单，Android 是怎么运行应用中的代码的呢，我们先看 Apk 的构成，一个常见的 Apk 会包含如下几个部分：
+classes.dex：Java 代码字节码 res：资源目录 lib：so 目录 assets：静态资产目录 AndroidManifest.xml：清单文件 其实 Android 系统在打开应用之后，也只是开辟进程，然后使用 ClassLoader 加载 classes.dex 至进程中，执行对应的组件而已。
+那大家可能会想一个问题，既然 Android 本身也是使用类似反射的形式加载代码执行，凭什么我们不能执行一个 Apk 中的代码呢？
+这其实就是插件化的目的，让 Apk 中的代码（主要是指 Android 组件）能够免安装运行，这样能够带来很多收益，最显而易见的优势其实就是通过网络热更新、热修复，想象一下，你的应用拥有 Native 应用一般极高的性能，又能获取诸如 Web 应用一样的收益。
+嗯，理想很美好不是嘛？
+🎯 难点在哪 大家其实都知道，Android 应用本身是基于魔改的 Java 虚拟机的，动态加载代码简直不要太简单，只需要使用 DexClassLoader 加载 Apk，然后反射里面的代码就可以了。
+但是光能反射代码是没有意义的，插件化真正的魅力在于，可以动态加载执行 Android 组件（即 Activity、Service、BroadcastReceiver、ContentProvider、Fragment）等。
+仔细想一下，其实要做到这一点是有难度的，最主要的阻碍是，四大组件是在系统里面中注册的，具体来说是在 Android 系统的 ActivityManagerService (AMS) 和 PackageManagerService (PMS) 中注册的，而四大组件的解析和启动都需要依赖 AMS 和 PMS，如何欺骗系统，让他承认一个未安装的 Apk 中的组件，就是插件化的最大难点。</description></item><item><title>MacOS 搭建 OpenGL 开发环境</title><link>https://www.kindem.xyz/post/26/</link><pubDate>Tue, 21 Apr 2020 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/26/</guid><description>准备工作 首先确认自己的 MacOS 上已经安装了 gcc：
+gcc --version 可以看到版本号：
+kindem@JohndeMacBook-Pro ~ % gcc --version Configured with: --prefix=/Applications/Xcode.app/Contents/Developer/usr --with-gxx-include-dir=/Applic ations/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++ /4.2.1 Apple clang version 11.0.3 (clang-1103.0.32.59) Target: x86_64-apple-darwin19.3.0 Thread model: posix InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin kindem@JohndeMacBook-Pro ~ % 如果没有安装的话会上面的指令会自动触发 XCode 下载并安装，根据提示安装完成之后再使用上面的指令检查一遍即可。
+接着安装 CLion，个人是极其推荐使用 JetBrain 家的 IDE 进行开发的，可以在如下网站下载：CLion - JetBrain，下载完成后自行完成安装与激活即可。
+安装完 CLion 之后，可以在 Settings 中检查 Toolchain 是否正确识别，如下：
+Toolchain 通常来说只需要安装好 gcc 即可，因为 cmake 会在 CLion 中自带，而 make 会在 MacOS 系统中提供。
+下载依赖库 通常来说，搭建 OpenGL 的开发环境需要两剑客：
+GLFW: 提供跨平台的 OpenGL 上下文初始化与窗口创建等功能 GLAD: 提供跨平台的 OpenGL 函数指针加载等功能 我们按照顺序分别下载这些库，首先是 GLFW，地址在这：Download - GLFW，GLFW 在不同的平台上都有预编译好的包，我们根据我们的系统下载 MacOS 版本的预编译包：</description></item><item><title>个人 JetBrain IDE 配色及字体分享</title><link>https://www.kindem.xyz/post/25/</link><pubDate>Sat, 04 Apr 2020 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/25/</guid><description>🍙 整体图 话不多说，先上一张图：
+Preview 🍳 使用到的东东 Material Theme UI：一款 JetBrain 系列 IDE 可以使用的主题插件，里面内置了很多配色，可以自选。 Fira Code：一款好看的等宽连体字体。 🍔 配置 JetBrain 家的 IDE 都可以按照这个方式配置，如 IDEA、PyCharm、Android Studio、CLion 等。这里以 IDEA 为例：
+首先下载 Fira Code 字体：Fira Code - Github，点击图示按钮下载字体包：
+Fira Code Download 下载完成字体包后自行字体即可。
+安装完字体后进入 IDE 设置，点击 Plugins 选项页，在搜索栏中输入 Material Theme UI，安装对应的插件，如下图：
+Plugin Install 安装完成之后需要重启 IDE，重启之后会进入一个欢迎页，便于你快速配置主题等，我们可以直接跳过，因为之后可以在设置里面手动配置。
+进入设置，搜索 material，进入图中的选项页，可以选择一些插件自带的配色：
+Theme 我最喜欢 Dracula，当然 One Dark Pro、Monokai Pro 等都是很不错的主题，可以根据自己喜欢来选择。
+配置完主题之后需要配置字体，在设置中搜索 font，找到图中的页面，但是先不要配置，点击图中的链接，进入 Color Scheme Font 的字体配置界面：
+IDE Font 点击链接后会进入下图的界面，这时候做真正的配置：
+Color Scheme Font 这里推荐配置 Font 为 Fira Code Retina，Fallback Font 为 Fira Code，字号的话 MacOS 为 15，Windows 为 14，行高 1.</description></item><item><title>Ubuntu / Debian 安装 MySQL</title><link>https://www.kindem.xyz/post/24/</link><pubDate>Sat, 22 Feb 2020 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/24/</guid><description>🧀 配置 apt-get Repo 首先打开网站 MySQL APT Repo，下载 MySQL APT 仓库描述文件：
+MySQL APT Repo 右键 No thanks, just start my download 链接，选择复制链接：
+Download 进入服务器终端，进入工作目录：
+cd ~ 使用 wget 下载刚刚复制的 deb 文件链接：
+wget https://dev.mysql.com/get/mysql-apt-config_0.8.15-1_all.deb 版本号可能不一定相同，以你自己复制的为准。下载完成后可以看到新增的文件，使用 dpkg 将仓库添加到 apt-get 中：
+sudo dpkg -i ./mysql-apt-config_0.8.15-1_all.deb 过程中会弹窗：
+Repo Request 选择最后一项继续，完成选择后再更新一把 apt-get 的源：
+sudo apt-get update 完成后可以开始正式的安装了：
+🍙 安装 sudo apt-get install mysql-server 中途会提示输入创建数据库 root 用户密码，创建后继续即可。
+🍥 基本操作 开启服务：
+sudo service mysql start 关闭服务：
+sudo service mysql stop 重启服务：</description></item><item><title>MacOS Homebrew 安装、更新慢解决方法</title><link>https://www.kindem.xyz/post/23/</link><pubDate>Tue, 18 Feb 2020 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/23/</guid><description>🍖 安装 如果使用 Homebrew 官方的安装脚本进行安装，会发现安装十分缓慢，我们可以更换安装脚本中设置的仓库路径来加速安装过程。
+首先先将官方的脚本下载下来，命名为 install：
+curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install &amp;gt;&amp;gt; install 使用 vim 或者其他文本编辑器打开 install 脚本，修改：
+BREW_REPO 一行为：
+BREW_REPO = &amp;#34;https://mirrors.ustc.edu.cn/brew.git&amp;#34;.freeze 保存后重新使用 ruby 运行脚本：
+ruby ./install 脚本会飞速安装，然后停顿在 homebrew-core 的下载过程，此时使用 ^C 快捷键强制结束进程，将 homebrew-core 手动下载到 homebrew 安装目录：
+git clone git://mirrors.ustc.edu.cn/homebrew-core.git/ /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core --depth=1 🧀 换源 完成上面的步骤之后，使用如下命令完成换源：
+# change brew source cd $(brew --repo) git remote set-url origin https://mirrors.ustc.edu.cn/brew.git # change brew-core source cd &amp;#34;$(brew --repo)/Library/Taps/homebrew/homebrew-core&amp;#34; git remote set-url origin https://mirrors.ustc.edu.cn/homebrew-core.git 完成换源之后，再执行更新指令一次：
+brew update 看看是不是比以前快了许多呢？</description></item><item><title>MacOS 环境变量重启失效问题解决</title><link>https://www.kindem.xyz/post/22/</link><pubDate>Thu, 23 Jan 2020 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/22/</guid><description>🍥 问题简述 之前用 Linux 习惯于将环境变量统一配置在 ~/.bash_profile 中，最近工作流切换到 MacOS 上，发现之前的法子不管用了，每次重启之后之前配置的环境变量就会失效。
+网上的说法是用了 zsh 才会出现这种情况，但是我自己并没有配置 zsh。
+经过一番周折发现 MacOS 在 10.15 版本以上默认终端就切换到了 zsh，所以就算没有配，也会被坑 &amp;hellip;
+🍖 解决办法 先使用这条指令查看自己到底是什么终端：
+ps -p $$ 比如我自己的：
+kindem@JohndeMBP platform-tools % ps -p $$ PID TTY TIME CMD 1274 ttys000 0:00.04 zsh 可以很明显的看到这里写的是 zsh，所以需要将 ~/.bash_profile 中配置的内容移动到 ~/.zshrc，或者将：
+source ~/.bash_profile 写入 ~/.zshrc 即可。</description></item><item><title>Android 调试技巧总结</title><link>https://www.kindem.xyz/post/21/</link><pubDate>Mon, 30 Dec 2019 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/21/</guid><description>在 Android Studio 中，最基本的以 debug 模式运行程序并打断点进行调试，相比大家都会，不过，如果遇到一些特殊的调试场景，则需要运用一些特殊的调试技巧来进行调试。
+🍗 在程序运行之后打断点调试 有时候，我们需要对已经运行的程序进行调试，这时候应该使用 Android Studio 的 Attach 功能：
+Attach 点击工具栏中的 Attach Debugger to Android Process 按钮，会显示出可以 Attach 的进程：
+如果未勾选 Show All Processes 选项，则只会显示当前项目对应的进程，勾选 Show All Processes 选项之后，则会显示当前机器上跑着的所有进程（需要 root 权限）。
+在调试之前先打好断点，然后在这里选择目标进程之后，即可成功断上。
+🍥 等待调试 在某些场景下，部分代码可能在程序一启动就执行完了，这种情况下，可以使用 “等待调试” 功能来让程序暂时停住，等待调试器 Attach 之后再开始执行。
+第一种方法是直接在代码中添加：
+import android.os.Debug; // ..... Debug.waitingForDebugger(); 编译运行后，当代码执行到这一句话之后，便会显示 Wait For Debugger 字样并且暂停执行，等待用户手动 Attach 之后才会接着执行，此时，就能断住之前执行太快断不住的代码进行调试了。
+另外一种方法是使用 adb 指令：
+adb shell am set-debug-app -w &amp;lt;packageName&amp;gt; 来设置待调试应用，设置了这一条语句之后启动对应应用之后则会停住，等待调试器 Attach，这种方法的好处是可以不用修改代码就让应用等待调试。
+🧀 调试 Android SDK 源码 在一些特殊的场景，需要调试 Android SDK 源码中产生的异常，通过 Android SDK 源码中产生的现象发现自己写的代码逻辑的问题。</description></item><item><title>用 Visual Studio Code 打造优雅的 Markdown 编辑环境</title><link>https://www.kindem.xyz/post/19/</link><pubDate>Sat, 12 Oct 2019 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/19/</guid><description>🍜 预备知识 Visual Studio Code (VSCode) 是微软推出的一款开源编辑器，使用 Electron 打造，与 Atom 齐名，不过随着 Atom 社区的渐渐缩小，VSCode 的影响力开始越来越大了。VSCode 内置了 Markdown 语言及预览的支持，很适合用于编辑 Markdown 文档。
+Markdown 是一种标记语言，可以在写文档的同时，通过添加一些特殊标记，快速完成文档的排版，很多程序员都喜欢使用 Markdown 来写文档，另外，github 也使用 Markdown 作为仓库 README 的标准语言，可以说是写技术文档的首选方案。关于 Markdown 的语法，可以在这里学习：菜鸟教程 - Markdown 教程
+🍨 搭建环境 首先当然是下载安装 VSCode 啦，官网在 Visual Studio Code，一路安装即可，完成安装之后，打开 VSCode 界面如下:
+VSCode UI 为了更好的编辑体验，我们可以先安装配色 One Dark Pro，这款配色沿袭自 Atom，是公认的比较舒服的几套配色之一，在侧边栏中的插件栏中搜索 One Dark Pro 并下载:
+Plugins 完成安装之后，在顶部工具栏中依次点击 File -&amp;gt; Preference -&amp;gt; Color Theme，选择 One Dark Pro，即可看到效果：
+One Dark Pro 之后我们需要配置一款舒适的字体，这里推荐 Fira Code，下载地址如下：Fira Code，下载 TTF 字体并安装即可，之后在 File -&amp;gt; Preference -&amp;gt; Settings 中依次更改这几项：</description></item><item><title>在 Electron + React 中使用 Node.js 模块</title><link>https://www.kindem.xyz/post/18/</link><pubDate>Sat, 13 Jul 2019 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/18/</guid><description>🤔 问题 如果在 Electron 中使用 React，在 React 组件中调用 Node.js 模块会抛出错误，告知你模块或者模块中的方法不存在，这是因为默认情况下 Electron 模拟的是纯浏览器环境，而浏览器中自然无法直接使用 Node.js 模块，如果需要使用 Node.js 模块，需要进行额外的配置。
+🎉 解决方法 在创建 Electron 中的 BrowserWindow 对象的时候，进行额外配置，启用 webPreferences 中的 nodeIntegration 和 nodeIntegrationInWorker，使之支持 Node.js 模块：
+let window = new BrowserWindow({ width: 800, height: 600, webPreferences: { nodeIntegration: true, nodeIntegrationInWorker: true } }); 完成这一步后，如果使用了 babel 进行编译，则可以直接使用：
+import path from &amp;#39;path&amp;#39;; 这样的形式引用 Node.js 模块，如果没有使用 babel，则需要使用：
+const path = window.require(&amp;#39;path&amp;#39;); 来引用 Node.js 模块。</description></item><item><title>在 react-app-rewired 中使用 uglify.js</title><link>https://www.kindem.xyz/post/17/</link><pubDate>Fri, 22 Mar 2019 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/17/</guid><description>🤔 起因 今天遇到一个玄学的 bug，主要是因为引入了 pinyin 包，这个包其中的一行代码会导致 Webpack 默认使用的 Minifier 失效，从而导致编译失败。
+经过一份排查和寻求帮助，我发现可以通过在 Webpack 中引入 uglifyjs 这一插件来解决。
+但是我使用的是 create-react-app 创建的 React 项目，这样一来 Webpack 的配置将会被隐藏，需要使用 react-app-rewired 来暴露位于 node_modules 目录下的 Webpack 配置，但是网上并没有找到关于在 react-app-rewired 中添加 uglifyjs 插件的方法。
+🎉 解决办法 在 npm 上搜寻了一番，找到了一个宝贝 &amp;ndash; react-app-rewire-uglifyjs，通过这个包可以直接在 react-app-rewired 中使用 uglifyjs，使用方法如下：
+在 react-app-rewired 的配置文件 /config-overrides.js 这样写：
+const rewireUglifyjs = require(&amp;#39;react-app-rewire-uglifyjs&amp;#39;); module.exports = function override(config, env) { // use UglifyJS config = rewireUglifyjs(config); return config; }; 文档可以参考这里：npm - react-app-rewire-uglifyjs</description></item><item><title>Linux 备忘</title><link>https://www.kindem.xyz/post/16/</link><pubDate>Thu, 21 Mar 2019 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/16/</guid><description>👦 用户类 新建用户：
+sudo useradd -m -s /bin/bash $username 移入 sudo 分组：
+sudo usermod -a -G sudo $username 为用户设置密码：
+sudo passwd $username 📦 包管理类 apt 更新源：
+sudo apt-get install update apt 更新软件包：
+sudo apt-get install upgrade 🥤 软件安装 Oh My ZSH 安装：
+sudo apt-get install zsh sh -c &amp;#34;$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)&amp;#34; vim ~/.zshrc # 修改 ZSH_THEME 即主题，我用的是 # 记得修改字体为 powerline 系列 git 初始配置：
+# 配置用户名邮箱 sudo git config --global user.name &amp;#34;$username&amp;#34; sudo git config --global user.</description></item><item><title>Ajax 跨域</title><link>https://www.kindem.xyz/post/14/</link><pubDate>Thu, 30 Aug 2018 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/14/</guid><description>🤔 Ajax跨域简介 所谓 Ajax 跨域指的是 Ajax 请求从其他的域获取数据或者传输数据
+所谓域同源，指的是两个服务器资源的根 url 的域名、端口、协议三者完全相同，只要三者中任何一个不同，则说明产生了跨域
+给一个例子，对于第一个服务器资源，其他一些 url 的同源情况如下:
+http://www.test.com/index.html http://www.test.com/index.js 同源 http://www.test.com/login/login.js 同源 https://www.test.com/index.html 跨域(协议) http://www.a.com/index.html 跨域(域名) http://a.com/index.html 跨域(不同子域) http://www.test.com:8080/index.html 跨域(端口) 🥤 常用跨域方法 CORS CORS 是一个 W3C 标准，其全称为 Cross-Origin Resource Sharing，即跨域资源共享。它允许浏览器向跨域服务器发送 XMLHttpRequest 请求，从而克服了 Ajax 只能同源使用的限制
+CORS 需要浏览器和服务器同时支持，目前主流浏览器都支持这个标准( IE&amp;gt;=10 )，所以 CORS 的关键主要在于服务器，要支持这个功能，往往开发者需要在服务器端进行额外设置
+另外，CORS 标准对用户来说是透明的，用户感知不到 CORS 的存在，一切都是浏览器自动完成。当浏览器检测到跨域的 Ajax 请求时，就会自动做出一些处理，使得请求能够跨域
+跨域的 Ajax 请求分为两种：
+简单请求: 请求方法为 HEAD、POST、GET 之一 HTTP 头字段只有 Accept、Accept-Language、Content-Language、Last-Event-ID、Content-Type 中的一种或多种 HTTP 头字段中的 Content-Type 字段的取值为 application/x-www-form-urlencoded、multipart/form-data、text/plain 之一 非简单请求: 所有不满足上述规则的请求 CORS 对于两种不同的请求的处理是不同的</description></item><item><title>JavaScript 中的模板字符串</title><link>https://www.kindem.xyz/post/12/</link><pubDate>Sat, 09 Jun 2018 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/12/</guid><description>模板字符串是可以使用内嵌表达式的字符串，不少高级语言中都有这一特性，如 Python、Kotlin，JavaScript 也在 ES5 规范中加入了这一特性。
+☕ 语法 `text` `lin1 lin2` `text ${expr}` tag `text ${expr}` 🧀 详解 JavaScript 中的模板字符串使用反引号来包裹字符串内容而不是单引号或双引号。
+转义 因为模板字符串使用反引号来包裹字符串内容，所以在模板字符串内部使用反引号时需要转义，如下：
+`\`` === &amp;#39;`&amp;#39; // true 多行字符串 如果使用模板字符串，任何被包裹在两个反引号之间的字符都会被认为是有效的字符串内容，包括换行字符。所以。
+`line1 line2` //等价于 &amp;#39;line1\n&amp;#39; + &amp;#39;line2&amp;#39; 内嵌表达式 使用模板字符串的最大优势在于不必再使用繁琐的字符串连接操作来连接普通字符串与表达式，而是可以直接在字符串内部写表达式。
+let a = 10; let b = 20; // &amp;#39;10 + 20 = 30&amp;#39; console.log(`${a} + ${b} = ${a + b}`); 带标签的模板字符串 更高级的形式的模板字符串是带标签的模板字符串。标签使您可以用函数解析模板字符串。标签函数的第一个参数包含一个字符串值的数组。其余的参数与表达式相关。最后，你的函数可以返回处理好的的字符串（或者它可以返回完全不同的东西 , 如下个例子所述）。用于该标签的函数的名称可以被命名为任何名字。
+var person = &amp;#39;Mike&amp;#39;; var age = 28; function myTag(strings, personExp, ageExp) { var str0 = strings[0]; // &amp;#34;that &amp;#34; var str1 = strings[1]; // &amp;#34; is a &amp;#34; // There is technically a string after // the final expression (in our example), // but it is empty (&amp;#34;&amp;#34;), so disregard.</description></item><item><title>使用 Electron 和 React 构建桌面应用</title><link>https://www.kindem.xyz/post/11/</link><pubDate>Sun, 03 Jun 2018 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/11/</guid><description>🤔 Electron ? Electron 是一个使用 HTML、CSS、JavaScript 构建跨平台桌面应用的框架。
+说白了就是用这个框架，你可以在使用前端技术来开发桌面应用，原理是在本地应用上跑一个抽出来的浏览器，浏览器上放你写的页面。
+你可能会问 Electron 的存在有什么意义，众所周知，前端技术可以让我们轻松写出漂亮易用的界面，如果你尝试过其他的桌面开发技术，想必你也应该知道其他的那些桌面开发工具开发出来的界面有多丑，而 Electron 轻松地解决了这个问题。而且从另外一个角度来讲，Electron 也可以快速地将你的网站打包成一个原生应用发布。总之，前端技术是构建用户界面最好的选择，而 Electron 则为这一思想在桌面的实现奠定了基础。
+☕ 聊一聊需要用到的前端技术栈 如果你已经对常见的前端技术栈有着一定了解，建议直接跳至下一节，查看 Electron + React 项目的建立方法。
+在开始我们的畅聊之前，先要说一说原始的前端技术。众所周知，传统的前端技术都是使用 HTML、CSS、JavaScript 这御三家来完成开发的，HTML 负责页面框架、CSS 负责页面样式、JavaScript 负责页面动态，这三者各司其职，展现出一个完整美妙的 Web 世界。
+随着前端的发展，这三者开始出现了这样那样的问题，每一项新前端技术的出现，都是前端的一次飞跃。
+Node.js Node.js 的出现，无非是前端发展的一个里程碑，它的出现，将前端推向了一个新的高峰。
+Node.js 是一个基于 Chrome V8 引擎的 JavaScript 运行环境。Node.js 使用了一个事件驱动、非阻塞式 I/O 的模型，使其轻量又高效。 Node.js 的包管理器 npm，是全球最大的开源库生态系统。
+看官网的解释你可能还是一脸懵逼，这么说吧，传统的 JavaScript 只能依赖浏览器而运行，而 Node.js 则将 Chrome 的浏览器引擎抽了出来并加以改进，使得 JavaScript 可以脱离浏览器而运行。
+而 npm 则是 Node.js 的一个包管理工具，你可以使用 npm 安装这样那样的 JavaScript 包，就像 Python 的 pip 那样简单。</description></item><item><title>Android 蓝牙库 FastBLE 的使用方法</title><link>https://www.kindem.xyz/post/10/</link><pubDate>Fri, 25 May 2018 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/10/</guid><description>☕ FastBle VS 原生Android蓝牙API 原生 Android 的蓝牙 API 使用有点麻烦，要先获取设备的蓝牙适配器，接着注册广播来接受蓝牙设备信息，用完了还需要将广播给注销，相对来说有点麻烦。
+不好封装，可以说是原生 Android 最让人痛苦的地方，这是因为原生 Android 的代码不是很独立，与 Activity、广播等相杂糅。市面上的蓝牙库也是少之又少，先看了看 BleLib，感觉还是换汤不换药，用起来一点也不简洁。
+但是 FastLib 封装的就很技巧，基本上能把一个操作的粒度控制在一行内，另外，代码也无需与线程、通知之类的打交道，库中已经帮我们把这些复杂的东西都做完了。
+FastBle 的 Github 项目地址在这，大家可以看看：FastBle - GitHub
+它的文档也相对比较完整，大家可以查看官方文档来使用它：FastBle - Document
+✨ FastBle的使用 0x00 申明权限 只要使用到了蓝牙，申明权限是必不可少的，FastBle 需要的权限如下:
+&amp;lt;uses-permission android:name=&amp;#34;android.permission.BLUETOOTH&amp;#34; /&amp;gt; &amp;lt;uses-permission android:name=&amp;#34;android.permission.BLUETOOTH_ADMIN&amp;#34; /&amp;gt; &amp;lt;uses-permission android:name=&amp;#34;android.permission.ACCESS_COARSE_LOCATION&amp;#34; /&amp;gt; &amp;lt;uses-permission android:name=&amp;#34;android.permission.ACCESS_FINE_LOCATION&amp;#34; /&amp;gt; 这里要注意一点，如果 Android 版本高于 6.0，用户还需要打开位置信息(不光要位置权限，还需要打开位置信息)才能通过蓝牙进行扫描。
+0x01 初始化与全局配置 初始化需要在库中任何函数被调用前执行，由于库使用的是单例模式，只需要初始化一次，在哪里都能使用，建议在 onCreate 里执行初始化代码：
+BleManager.getInstance().init(getApplication()); 全局配置可以紧跟初始化之后执行，当然如果不进行配置也没有任何关系，每一个选项都有默认值：
+BleManager.getInstance() .enableLog(true) .setReConnectCount(1, 5000) .setSplitWriteNum(20) .setConnectOverTime(10000) .setOperateTimeout(5000); 每一项的详细信息你都能在官方文档中找到说明
+0x02 打开蓝牙 使用 FastBle 中的 BleManager 类有很多种方式来打开蓝牙，这里推荐使用下面这种方式，这种方式会使线程被阻塞，如果用户不选择是否打开蓝牙，线程将会暂停执行：</description></item><item><title>Ubuntu18 搭建 GTK 开发环境</title><link>https://www.kindem.xyz/post/9/</link><pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/9/</guid><description>📦 Ubuntu18 下 Gtk 开发环境搭建 GTK 是在 Linux 下使用 c 语言构建图形界面的一个库，它构建的图形界面是基于 GNOME 运行的。
+Ubuntu18 已经回归到了主流 Linux 桌面 GNOME 上，所以我们搭建 GTK 开发环境的时候，不需要再额外安装 GNOME 了。
+至于 GTK 的安装，你首先需要安装编译工具：
+sudo apt-get install build-essential GTK 现在有两种版本，2 和 3，可以使用如下指令同时安装两个版本:
+sudo apt-get install gnome-core-devel 接下来还要安装 pkg-config 用于自动查找 GTK 的头文件位置：
+sudo apt-get install pkg-config 完成之后你可以使用官方给出的示例来测试是否能够运行，Getting Started With GTK+
+编译指令如下：
+gcc main.c -o main `pkg-config --cflags --libs gtk+-3.0` 完成之后即可打开可执行文件运行查看效果</description></item><item><title>Bash On Windows 安装教程</title><link>https://www.kindem.xyz/post/8/</link><pubDate>Tue, 15 May 2018 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/8/</guid><description>🤔 什么是 Bash On Windows Bash On Windows 是微软的 Microsoft Love Linux 计划中重要的一环，目的是能让 Windows 用户能在系统中运行 Linux 子系统，也就是说你可以直接在 Windows 中获得原生 Linux Bash 级别的体验。
+📦 安装 首先你要确保你的 Windows 已经升级到创意者更新版本( 1709 )，因为只有创意者更新版本以后的 Windows，Bash On Windows 才真正发行，之前的都是测试版本。
+首先，你需要进入控制面板的程序与功能界面，点击启动或关闭 Windows 功能： 程序与功能 然后，把适用于 Windows 的 Linux 子系统这一项勾上，并且点击确定 启动或关闭Windows功能 接着，你就可以直接在商店下载你需要的 Linux 系统了，打开 Windows Store，搜索 Linux，可以看到很多 Linux 子系统： Windows Store 你可以任选一下载，我选的是 Ubuntu 18.04，下载完成之后，你可以在 Windows 任务栏上面的搜索栏直接搜索 Ubuntu (我是 Ubuntu，如果你下了其他的你就搜其他的)，打开会要求你先重启电脑。
+重启之，重启完成之后，再次打开子系统，你会发现他在慢慢解压，如果不成功的话，你可以直接在 Windows Store 中卸载它并且重新安装就行了，Linux 子系统在 Windows 里面，就相当于一个 Windows Store 应用。</description></item><item><title>React Router 使用 Url 传参后改变页面参数不刷新的解决方法</title><link>https://www.kindem.xyz/post/7/</link><pubDate>Mon, 07 May 2018 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/7/</guid><description>🤔 问题 今天在写页面的时候发现一个问题，就是在 React Router 中使用了 Url 传参的功能，像这样:
+export class MainRouter extends React.Component { render() { return ( &amp;lt;BrowserRouter&amp;gt; &amp;lt;Switch&amp;gt; ... &amp;lt;Route exact path={&amp;#39;/channel/:channelId&amp;#39;} component={ChannelPerPage}/&amp;gt; ... &amp;lt;/Switch&amp;gt; &amp;lt;/BrowserRouter&amp;gt; ); } } 按照官方文档的说法，可以在 ChannelPerPage 这个组件中使用
+this.props.match.params 来获取 url 参数的值，但是我发现如果你在这个 url 下只将 url 中的参数部分改变，比如 channelId 从 1 变成 2 的时候，页面并不会重新渲染。
+🧐 解决办法 查阅资料后发现这样的根本原因是 props 的改变并不会引起组件的重新渲染，只有 state 的变化才会引起组件的重新渲染，而 url 参数属于 props，故改变 url 参数并不会引起组件的重新渲染。
+后来发现React的组件中有一个可复写的方法
+componentWillReceiveProps(nextProps) { ... } 这个方法可以在 React 组件中被复写，这个方法将会在 props 改变的时候被调用，所以你可以使用这个方法将 nextProps 获取到，并且在这个方法里面修改 state 的内容，这样就可以让组件重新被渲染。</description></item><item><title>Django 中图片的上传及显示</title><link>https://www.kindem.xyz/post/6/</link><pubDate>Fri, 04 May 2018 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/6/</guid><description>在 Django 中，上传文件不同于普通服务器的上传方法，在普通服务器中只需要使用一个 Controller 来控制文件的上传即可完成，但是在 Django 中，则需要额外使用数据库资源来存储文件。本文将说明如何使用 Django 接收、保存并且返回图片。
+☕ 准备 首先，你需要为你的 Python 安装 pillow，pillow 是一个 Python 图像库，Django 的图片方面的功能使用到了它，所以我们需要事先安装：
+pip install pillow 安装完成之后我们需要在 Django 的 settings.py 中更改一些设置：
+# settings.py # 在末尾添加 MEDIA_ROOT = os.path.join(BASE_DIR, &amp;#39;media&amp;#39;).replace(&amp;#39;\\&amp;#39;, &amp;#39;/&amp;#39;) MEDIA_URL = &amp;#39;/media/&amp;#39; 🎫 Model 之前说到了 Django 的图片需要使用额外的数据库资源来存储文件，这样的设定并不是把图片数据本身存在数据库，而是 Django 将会自动将文件上传到你设置的位置，并且把上传之后的图片 path 存入数据库，这样你只需要访问数据库中的 path 即可访问到图片。
+在你的应用目录下的 models.py 里新建一个图片 Model
+from django.db import models class Image(models.Model): # 图片 img = models.ImageField(upload_to=&amp;#39;img&amp;#39;) # 创建时间 time = models.DateTimeField(auto_now_add=True) 这样做之后，一旦数据库对象被创建，img 表列接受的图片对象将会自动被上传到 /media/img 文件夹中，在上传完成之后，img 将会保存图片的 path。</description></item><item><title>使用原生 JavaScript 封装 Ajax 操作</title><link>https://www.kindem.xyz/post/5/</link><pubDate>Tue, 24 Apr 2018 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/5/</guid><description>📦 封装举例 export class Ajax { static get(url, data, hook) { let xmlHttpRequest = new XMLHttpRequest(); url += &amp;#39;?&amp;#39;; let count = -1; for (let key in data) { count++; if (data.hasOwnProperty(key)) { url += count === 0 ? key + &amp;#39;=&amp;#39; + data[key] : &amp;#39;&amp;amp;&amp;#39; + key + &amp;#39;=&amp;#39; + data[key]; } } xmlHttpRequest.open(&amp;#39;GET&amp;#39;, url, true); xmlHttpRequest.onreadystatechange = () =&amp;gt; { if (xmlHttpRequest.readyState === 4 &amp;amp;&amp;amp; xmlHttpRequest.status === 200 || xmlHttpRequest.</description></item></channel></rss>

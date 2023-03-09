@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Electron on Kindem的博客</title><link>https://www.kindem.xyz/tags/electron/</link><description>Recent content in Electron on Kindem的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 13 Jul 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://www.kindem.xyz/tags/electron/index.xml" rel="self" type="application/rss+xml"/><item><title>在 Electron + React 中使用 Node.js 模块</title><link>https://www.kindem.xyz/post/18/</link><pubDate>Sat, 13 Jul 2019 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/18/</guid><description>🤔 问题 如果在 Electron 中使用 React，在 React 组件中调用 Node.js 模块会抛出错误，告知你模块或者模块中的方法不存在，这是因为默认情况下 Electron 模拟的是纯浏览器环境，而浏览器中自然无法直接使用 Node.js 模块，如果需要使用 Node.js 模块，需要进行额外的配置。
+🎉 解决方法 在创建 Electron 中的 BrowserWindow 对象的时候，进行额外配置，启用 webPreferences 中的 nodeIntegration 和 nodeIntegrationInWorker，使之支持 Node.js 模块：
+let window = new BrowserWindow({ width: 800, height: 600, webPreferences: { nodeIntegration: true, nodeIntegrationInWorker: true } }); 完成这一步后，如果使用了 babel 进行编译，则可以直接使用：
+import path from &amp;#39;path&amp;#39;; 这样的形式引用 Node.js 模块，如果没有使用 babel，则需要使用：
+const path = window.require(&amp;#39;path&amp;#39;); 来引用 Node.js 模块。</description></item><item><title>使用 Electron 和 React 构建桌面应用</title><link>https://www.kindem.xyz/post/11/</link><pubDate>Sun, 03 Jun 2018 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/11/</guid><description>🤔 Electron ? Electron 是一个使用 HTML、CSS、JavaScript 构建跨平台桌面应用的框架。
+说白了就是用这个框架，你可以在使用前端技术来开发桌面应用，原理是在本地应用上跑一个抽出来的浏览器，浏览器上放你写的页面。
+你可能会问 Electron 的存在有什么意义，众所周知，前端技术可以让我们轻松写出漂亮易用的界面，如果你尝试过其他的桌面开发技术，想必你也应该知道其他的那些桌面开发工具开发出来的界面有多丑，而 Electron 轻松地解决了这个问题。而且从另外一个角度来讲，Electron 也可以快速地将你的网站打包成一个原生应用发布。总之，前端技术是构建用户界面最好的选择，而 Electron 则为这一思想在桌面的实现奠定了基础。
+☕ 聊一聊需要用到的前端技术栈 如果你已经对常见的前端技术栈有着一定了解，建议直接跳至下一节，查看 Electron + React 项目的建立方法。
+在开始我们的畅聊之前，先要说一说原始的前端技术。众所周知，传统的前端技术都是使用 HTML、CSS、JavaScript 这御三家来完成开发的，HTML 负责页面框架、CSS 负责页面样式、JavaScript 负责页面动态，这三者各司其职，展现出一个完整美妙的 Web 世界。
+随着前端的发展，这三者开始出现了这样那样的问题，每一项新前端技术的出现，都是前端的一次飞跃。
+Node.js Node.js 的出现，无非是前端发展的一个里程碑，它的出现，将前端推向了一个新的高峰。
+Node.js 是一个基于 Chrome V8 引擎的 JavaScript 运行环境。Node.js 使用了一个事件驱动、非阻塞式 I/O 的模型，使其轻量又高效。 Node.js 的包管理器 npm，是全球最大的开源库生态系统。
+看官网的解释你可能还是一脸懵逼，这么说吧，传统的 JavaScript 只能依赖浏览器而运行，而 Node.js 则将 Chrome 的浏览器引擎抽了出来并加以改进，使得 JavaScript 可以脱离浏览器而运行。
+而 npm 则是 Node.js 的一个包管理工具，你可以使用 npm 安装这样那样的 JavaScript 包，就像 Python 的 pip 那样简单。</description></item></channel></rss>

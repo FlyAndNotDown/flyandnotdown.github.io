@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>GTK on Kindem的博客</title><link>https://www.kindem.xyz/tags/gtk/</link><description>Recent content in GTK on Kindem的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 18 May 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://www.kindem.xyz/tags/gtk/index.xml" rel="self" type="application/rss+xml"/><item><title>Ubuntu18 搭建 GTK 开发环境</title><link>https://www.kindem.xyz/post/9/</link><pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/9/</guid><description>📦 Ubuntu18 下 Gtk 开发环境搭建 GTK 是在 Linux 下使用 c 语言构建图形界面的一个库，它构建的图形界面是基于 GNOME 运行的。
+Ubuntu18 已经回归到了主流 Linux 桌面 GNOME 上，所以我们搭建 GTK 开发环境的时候，不需要再额外安装 GNOME 了。
+至于 GTK 的安装，你首先需要安装编译工具：
+sudo apt-get install build-essential GTK 现在有两种版本，2 和 3，可以使用如下指令同时安装两个版本:
+sudo apt-get install gnome-core-devel 接下来还要安装 pkg-config 用于自动查找 GTK 的头文件位置：
+sudo apt-get install pkg-config 完成之后你可以使用官方给出的示例来测试是否能够运行，Getting Started With GTK+
+编译指令如下：
+gcc main.c -o main `pkg-config --cflags --libs gtk+-3.0` 完成之后即可打开可执行文件运行查看效果</description></item></channel></rss>

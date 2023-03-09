@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Node.js on Kindem的博客</title><link>https://www.kindem.xyz/tags/node.js/</link><description>Recent content in Node.js on Kindem的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 14 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://www.kindem.xyz/tags/node.js/index.xml" rel="self" type="application/rss+xml"/><item><title>使用 Emailjs 发送邮件</title><link>https://www.kindem.xyz/post/30/</link><pubDate>Thu, 14 Jan 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/30/</guid><description>💡 背景 突然需要一个后端发送邮箱验证码的功能，我使用的后端框架是基于 Node.js 搭建的，所以准备找一个合适的能够调用 SMTP 服务发送邮件的轮子。
+一番寻找之后，我找到了 emailjs，下面简单介绍一下用法。
+📦 安装 最经典的 npm/yarn 安装：
+# Yarn yarn add emailjs # Npm npm install emailjs 📮 配置邮箱 接下来需要一个可以使用的邮箱账户，因为我不准备以个人邮箱发送验证码，我使用了免费的 腾讯企业邮箱，注册了一个企业账户，当然你可以使用任意支持 SMTP 服务的邮箱。
+接下来需要在邮箱后台配置开启 SMTP 服务：
+Email Config 有一些邮箱对于三方客户端采取了高级的安全登录策略，不允许直接使用密码登录，而是使用 token，腾讯企业邮箱就采取了这样的方案：
+Login Config 这时候我们需要生成一个新的 token 用于 emailjs 使用 SMTP 服务：
+Token Generate 复制客户端密码，准备使用 emailjs 发送邮件。
+🎯 Emailjs 使用 emailjs 是基于 SMTP 服务发送邮件的，我们需要先查询对应邮箱服务器的 SMTP 服务端口与地址，腾讯企业邮箱有一个 配置指南，通过配置指南我们可以得到以下信息：
+SMTP 发送服务器地址：smtp.exmail.qq.com 端口号：465 SSL：开启 接下来编写 Node.js 代码：
+const { SMTPClient } = require(&amp;#39;emailjs&amp;#39;); const client = new SMTPClient({ user: `${senderEmail}`, password: `${password}`, host: &amp;#39;smtp.</description></item><item><title>在 Electron + React 中使用 Node.js 模块</title><link>https://www.kindem.xyz/post/18/</link><pubDate>Sat, 13 Jul 2019 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/18/</guid><description>🤔 问题 如果在 Electron 中使用 React，在 React 组件中调用 Node.js 模块会抛出错误，告知你模块或者模块中的方法不存在，这是因为默认情况下 Electron 模拟的是纯浏览器环境，而浏览器中自然无法直接使用 Node.js 模块，如果需要使用 Node.js 模块，需要进行额外的配置。
+🎉 解决方法 在创建 Electron 中的 BrowserWindow 对象的时候，进行额外配置，启用 webPreferences 中的 nodeIntegration 和 nodeIntegrationInWorker，使之支持 Node.js 模块：
+let window = new BrowserWindow({ width: 800, height: 600, webPreferences: { nodeIntegration: true, nodeIntegrationInWorker: true } }); 完成这一步后，如果使用了 babel 进行编译，则可以直接使用：
+import path from &amp;#39;path&amp;#39;; 这样的形式引用 Node.js 模块，如果没有使用 babel，则需要使用：
+const path = window.require(&amp;#39;path&amp;#39;); 来引用 Node.js 模块。</description></item></channel></rss>

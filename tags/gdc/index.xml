@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>GDC on Kindem的博客</title><link>https://www.kindem.xyz/tags/gdc/</link><description>Recent content in GDC on Kindem的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 03 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://www.kindem.xyz/tags/gdc/index.xml" rel="self" type="application/rss+xml"/><item><title>GDC 笔记 - Simulating Tropical Weather in FARCRY6</title><link>https://www.kindem.xyz/post/57/</link><pubDate>Sat, 03 Sep 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/57/</guid><description>FarCry6 的一个分享，热带天气的模拟。
+Speakers 的介绍，一个图形程序和一个 TA。
+先介绍下 FarCry6，FarCry 系列大家都比较熟悉了，一直都做的开放世界第一人称射击，每一代 FarCry 的剧情都会在一个不同的环境下展开。这一代故事发生在一个名为雅拉的热带小岛上，雅拉的原型是古巴（现实生活中古巴在美洲加勒比海附近，是一个热带群岛国家，北纬 19-24 度）。
+这一代玩家会扮演一名名为丹尼罗杰斯的本地反叛军，剧情就是推翻独裁者安东和他儿子迭戈的凶暴统治。这里的封面就是安东和迭戈，看过绝命毒师的应该都知道，这张脸的原型就是炸鸡叔，看着就知道是大反派。
+FarCry 的每一代开放世界都有自己的特色，本作的特色就是热带风情，要给玩家完美地展示热带风土人情，全动态的天气系统是必不可少的。
+这几张图展示了游戏中的不同天气，分别是晴天、雨天、阴天、夜晚。
+下面会分为几个板块去介绍 FarCry6 的天气系统：
+天气系统的灵感来源 天气系统的核心概念 如何让湿度影响所有资产的材质 用到的渲染技术 总结 首先是一些现实生活中热带天气的参考，之前说的古巴就是一个很合适的地方。
+在项目开始的时候，项目组花时间对热带天气进行了大量的调研，以带给玩家一个更加真实的世界。热带小岛的天气是独特而多变的，这几张图是热带小岛标志性的晴天。
+这几张图是压抑的雨天和雷暴天气。除了实现天气效果本身，天气系统还要能够支持剧烈地变化与切换。
+上面的参考被吸纳进了他们的概念设计中，这张图是早期的概念设计图。
+然而他们的艺术总监想要打造一种不祥的氛围，然后就改成了上面这种充满雷暴的天气。
+想要营造一种被风暴困住的感觉，真实的雨和湿润效果是必不可少的。
+当然，雅拉是一个小岛，所以天气与海的互动也是天气系统中重要的一环。
+时候需要记得我们是为一个开放世界游戏打造一套天气系统，所以有这些目标：
+足够真实 全动态，支持 TOD 天气切换过渡自然 高性能 下面介绍天气系统的一些核心概念。
+天气系统的核心是 Weather Manager，里面包含了一些定义并控制天气的关键信息。Weather Manager 本身是一个后端，前端则是 Weather Database，即暴露给美术的各种天气设置。
+Weather Presets 是项目中可以引用的一系列天气预设，每一个 Weather Preset 都引用了一系列 Weather Manager 暴露的参数，参数的变化可以印象天气。
+举几个例子，这张图是 Few Clouds 预设的效果与对应的参数。
+对比下，Broken Clouds 预设下云的覆盖率就更大，而且显得更蓬松。
+Mist 预设下就能看见一层淡淡的雾。
+Fog 预设下则更明显。
+Light Rain 预设，开始下小雨。
+Moderate Rain 预设，中雨。</description></item><item><title>GDC 笔记 - FidelityFX Super Resolution 2.0</title><link>https://www.kindem.xyz/post/56/</link><pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/56/</guid><description>原文链接：GDC 2022 - FidelityFX Super Resolution 2.0
+AMD FSR 2.0 版本，相对 FSR 1.0 架构上有较大改动。
+先回顾下 FSR 1.0，FSR 1.0 推出于 2021 年七月，是 AMD 推出的空间域超分解决方案，高性能，易集成，比价友好的 MIT License，已经在很多游戏中被集成了。
+因为 FSR 1.0 是基于空间域的超分算法，好处就是很容易集成（直接挂在后处理最后就行了），但同时也有一些缺陷：
+FSR 1.0 的输入需要经过高质量的抗锯齿处理，这个问题就算是不考虑超分，也是一个比较头疼的问题，把 FSR 1.0 挂在低质量的 TAA 实现后面就会产生质量很差的输出，这意味着如果游戏没有实现抗锯齿就集成 FSR 1.0，就要花上更多的时间。 超分的质量取决于输入图像的分辨率，如果输入图像的分辨率太低，就没有足够的信息来重现细节，太低的分辨率还会导致一些画面的缺陷，比如闪烁、边缘模糊等，这种情况通常在使用 Performance 模式时出现。 FSR 2.0 是下一代超分解决方案，不再基于空间域，而是基于时空域。FSR 2.0 与 FSR 1.0 并不兼容，需要不同的输入，并且直接内置了抗锯齿。质量要比 1.0 更高，提供了不同的 Quality Mode，同时支持了动态分辨率。跟 FSR 1.0 一样的是开源、跨平台、高度优化，不需要硬件支持的深度学习（内涵 DLSS），以 C++ / HLSL 库的方式提供 API，并且可以随意定制。
+算法介绍。
+FSR 2.0 的输入和 1.0 不再一样，输入为渲染尺寸的 Color、Depth、Motion（像素相比前一帧的位移）。与之对比，FSR 1.</description></item><item><title>GDC 笔记 - Quadtree Displacement Mapping with Height Blending</title><link>https://www.kindem.xyz/post/53/</link><pubDate>Tue, 15 Mar 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/53/</guid><description>原文链接：Quadtree Displacement Mapping with Height Blending
+目录
+下一代渲染的一些要素与目标。
+然而现实是现在的 Surface Rendering 差距甚远。
+地形的 Surface Rendering 是很费的，而且需要做混合，混合意味着不能拥有较高的几何复杂度。
+Surface 的几何细节包括体积、深度、各种频率的细节。他们结合起来可以产生一些其他的效果：深度视差、自阴影、光反应性。
+Surface Rendering 要实现光照交互依赖 Surface 的微观结构，目前已经有一些理论研究（比如烘焙 Terrance BDRF）了。要体现出几何的复杂性，可以通过修改三角面或者走光追。但是三角面相关的方法都比较费，比如直接增加面数，顶点的 Transform 和显存开销都会相应增加，更实用的做法是实用 Tessellation 在管线中倍增三角面。
+做这套方案的动机：
+应对不同的 Surface：地形、静态/动态物体 高性能：支持当前的硬件 最小化显存开销：开销与传统的 Normal Mapping 相当，能在当前的主机平台顺利运行 所以这套方案需要支持：
+获取任意角度下的精确深度 自阴影 AO 快速、准确的混合 效果对比图。
+现有的提高深度复杂度的解决方案无非两种：
+寻找真正的 Surface 的深度，即寻找 View Ray 和 Height Field 的真正交点 通过计算好的 Depth Offset 来进行光照计算 比如上面这张图，在无视高度细节的情况下交点实际上是错误的。
+正确的交点应该是图中虚线和 View Ray 的交点。
+一种做法是对 Height Field 数据做 Ray Tracing，这意味着额外的显存消耗。
+Relief Mapping (RM) 和 Parallax Oclussion Mapping (POM) 都是光追做法。</description></item><item><title>GDC 笔记 - 'Ghost Recon Wildlands': Terrain Tools and Technology</title><link>https://www.kindem.xyz/post/51/</link><pubDate>Mon, 21 Feb 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/51/</guid><description>原文链接：&amp;lsquo;Ghost Recon Wildlands&amp;rsquo;: Terrain Tools and Technology
+地图规格。
+11 种生态群落，140 种地表材质。
+河流面积与顶点。
+植被与石头。
+道路、贴花。
+铁路网。
+建筑与聚落。
+GPU 雕刻工具的介绍。
+基于 World Machine 开发了一套程序化生成的管线，用于自动生成高度图，作为后续地形编辑的 Input。
+美术规格。
+做了一个非常快速的 GPU-Based 的地形雕刻工具，最多可以一次雕刻 2km x 2km 的地块。
+对高度图做了分层，Base 层是 World Matchine 的输出，不会被改变，Editor 产生的修改被放到 Macro 层。DCC 层专门放置 Houdini 生成的修改，后面会具体讲。Micro 则存放关卡美术做的微小调整。
+地表。
+目标是生成真实、高质量的地表，然而这么大的地图纯手刷不可能搞定。
+尝试了一个简单的规则，按照地形的 Normal 做灰色到白色的插值，其实就能生成一个不错的山脉地表了，可以按照这个思路扩展地表的生成规则。
+最终定下来的用于程序化生成的参数有四个，坡度、高度、噪声、曲率，按照这几个参数在 Pixel Shader 里面实时计算。
+美术工具截图，修改参数就可以实时生成地表看到效果，非常方便。
+虽然现在可以一键生成地表了，但是有些过渡的地方还是显得不太自然。于是又支持了美术手刷地表。
+地表最终会被保存为两张纹理，分别叫 Splatting Texture (R8) 和 Vista Texture (BC5)，Splatting Texture 中保存了当前地表所对应的材质索引，Vista Texture 保存的是一个简单的 Albedo，用于远处地表的渲染。
+地块是按照四叉树存储的，每一个四叉树节点都带 Payload，包含 LOD、Culling、Streaming 信息。这些节点会根据距离相机的距离进行 Streaming In / Out。</description></item><item><title>GDC 笔记 - Terrain Rendering in 'Far Cry 5'</title><link>https://www.kindem.xyz/post/52/</link><pubDate>Mon, 21 Feb 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/52/</guid><description>原文链接：GDC Vault - Terrain Rendering in &amp;lsquo;Far Cry 5&amp;rsquo;
+地形 Heightfield 渲染。
+地图大小是 10km x 10km，分辨率 0.5m，地形按照四叉树管理，整个地形被划分成 2km x 2km 的地块，这些地块永久可见。
+上面说的 2km x 2km 的地块被按照四叉树划分成很多 Tile，这些 Tile 按照 LOD 以及与玩家的距离进行 Steaming，磁盘上存储的 Tiles 数量上万，但是实际上运行时加载进内存的 Tiles 数量大概在 500 左右。
+所有四叉树节点所需要的 Textures 会同步被 Streaming 进 Texture Atlases，节点中会记录对应 Atlases 中的位置。纹理格式：
+Heightmap: R16_UNORM, 129x129 World space normal map: BC3, 132x132 Baked albedo map: BC1, 132x132 地形的渲染大概这么几步。
+首先是四叉树节点的 Streaming，首先在 LOD0 找到离玩家最近的一圈节点。
+切换到下一级 LOD，按更大范围找四叉树中对应的节点。
+以此类推，直到最后一级 LOD，前面说到了，最后一级 LOD 对应的四叉树节点是永远被加载的。这里只演示了 3 级 LOD，实际上 Far Cry 5 里有 6 级。</description></item></channel></rss>

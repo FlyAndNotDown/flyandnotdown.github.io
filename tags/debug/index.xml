@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Debug on Kindem的博客</title><link>https://www.kindem.xyz/tags/debug/</link><description>Recent content in Debug on Kindem的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Mon, 03 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://www.kindem.xyz/tags/debug/index.xml" rel="self" type="application/rss+xml"/><item><title>MacOS 编译 RenderDoc</title><link>https://www.kindem.xyz/post/36/</link><pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/36/</guid><description>安装依赖 需要安装的依赖如下：
+autoconf automake Qt5 其中 Qt5 是 RenderDoc 的界面库，autoconf 和 automake 在构建 c 胶水层生成工具 swig 会使用到。
+我们可以直接使用 brew 依次安装所有依赖：
+brew install autoconf brew install automake brew install qt5 完成安装后，还需要配置一下 Qt5 的 bin 目录到 PATH 中：
+export PATH=&amp;#34;/usr/local/opt/qt@5/bin:$PATH&amp;#34; 编译 RenderDoc 首先下载源码，可以直接去 github 下载最新的 release 版本：GitHub - RenderDoc：
+RenderDoc - Downloads 下载完成后解压：
+tar -xvf renderdoc-1.13.tar.gz 完成后进入 RenderDoc 源码目录使用 CMake 开始构建：
+cd renderdoc-1.13 mkdir build cd build cmake .. cmake --build . -j 16 建议构建时开启 VPN，因为会去墙外下载他们修改过的 swig 源码并当场构建，网络不好可能会构建失败。</description></item><item><title>Android 调试技巧总结</title><link>https://www.kindem.xyz/post/21/</link><pubDate>Mon, 30 Dec 2019 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/21/</guid><description>在 Android Studio 中，最基本的以 debug 模式运行程序并打断点进行调试，相比大家都会，不过，如果遇到一些特殊的调试场景，则需要运用一些特殊的调试技巧来进行调试。
+🍗 在程序运行之后打断点调试 有时候，我们需要对已经运行的程序进行调试，这时候应该使用 Android Studio 的 Attach 功能：
+Attach 点击工具栏中的 Attach Debugger to Android Process 按钮，会显示出可以 Attach 的进程：
+如果未勾选 Show All Processes 选项，则只会显示当前项目对应的进程，勾选 Show All Processes 选项之后，则会显示当前机器上跑着的所有进程（需要 root 权限）。
+在调试之前先打好断点，然后在这里选择目标进程之后，即可成功断上。
+🍥 等待调试 在某些场景下，部分代码可能在程序一启动就执行完了，这种情况下，可以使用 “等待调试” 功能来让程序暂时停住，等待调试器 Attach 之后再开始执行。
+第一种方法是直接在代码中添加：
+import android.os.Debug; // ..... Debug.waitingForDebugger(); 编译运行后，当代码执行到这一句话之后，便会显示 Wait For Debugger 字样并且暂停执行，等待用户手动 Attach 之后才会接着执行，此时，就能断住之前执行太快断不住的代码进行调试了。
+另外一种方法是使用 adb 指令：
+adb shell am set-debug-app -w &amp;lt;packageName&amp;gt; 来设置待调试应用，设置了这一条语句之后启动对应应用之后则会停住，等待调试器 Attach，这种方法的好处是可以不用修改代码就让应用等待调试。
+🧀 调试 Android SDK 源码 在一些特殊的场景，需要调试 Android SDK 源码中产生的异常，通过 Android SDK 源码中产生的现象发现自己写的代码逻辑的问题。</description></item></channel></rss>
