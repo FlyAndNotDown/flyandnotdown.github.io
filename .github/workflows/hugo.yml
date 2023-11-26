@@ -50,8 +50,7 @@ jobs:
             --minify
       - name: Add Custom Domain
         run: |
-          echo www.kindem.xyz > public/CHAME
-          echo "" > public/CHAME
+          echo www.kindem.xyz > public/CNAME
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
