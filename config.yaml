@@ -1,4 +1,4 @@
-baseurl: https://www.kindem.xyz/
+baseurl: https://flyandnotdown.github.io/
 languageCode: zh-cn
 theme: hugo-theme-stack
 paginate: 10
@@ -32,7 +32,7 @@ params:
 
     footer:
         since: 2017
-        customText: ©2017-2021 Copyright kindem.xyz / 湘ICP备17018771号-1
+        customText: ©2017-2021 Copyright Kindem
 
     dateFormat:
         published: Jan 02, 2006

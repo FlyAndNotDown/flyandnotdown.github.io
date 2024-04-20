@@ -3,14 +3,14 @@ const FileSystem = require('fs');
 
 const config = {
     postDir: 'content/post',
-    site: "https://www.kindem.xyz",
-    basePostUrl: 'https://www.kindem.xyz/post',
+    site: "https://flyandnotdown.github.io/",
+    basePostUrl: 'https://flyandnotdown.github.io/post',
     prefabUrls: [
-        'https://www.kindem.xyz'
+        'https://flyandnotdown.github.io'
     ],
     searchEngines: {
         baidu: {
-            host: 'http://data.zz.baidu.com/urls?site=https://www.kindem.xyz&token=lDsJO81mKXxekZI6',
+            host: 'http://data.zz.baidu.com/urls?site=https://flyandnotdown.github.io&token=lDsJO81mKXxekZI6',
             format: 'baidu',
             method: 'post',
             contentType: 'plain/text'

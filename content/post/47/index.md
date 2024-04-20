@@ -45,10 +45,10 @@ const FileSystem = require('fs');
 
 const config = {
     postDir: 'content/post',
-    basePostUrl: 'https://www.kindem.xyz/post',
-    targetHost: 'http://data.zz.baidu.com/urls?site=https://www.kindem.xyz&token=lDsJO81mKXxekZI6',
+    basePostUrl: 'https://flyandnotdown.github.io/post',
+    targetHost: 'http://data.zz.baidu.com/urls?site=https://flyandnotdown.github.io&token=lDsJO81mKXxekZI6',
     fixedUrls: [
-        'https://www.kindem.xyz'
+        'https://flyandnotdown.github.io/'
     ]
 };
 

@@ -38,7 +38,7 @@ Hello, 我是 Kindem，一名全栈开发者，热爱生活，热爱代码~
 个人信息：
 
 * GitHub: [FlyAndNotDown](https://github.com/FlyAndNotDown)
-* Blog：[Kindem的博客](https://www.kindem.xyz/)
-* RSS：[https://www.kindem.xyz/index.xml](https://www.kindem.xyz/index.xml)
+* Blog：[Kindem的博客](https://flyandnotdown.github.io/)
+* RSS：[https://flyandnotdown.github.io/index.xml](https://flyandnotdown.github.io/index.xml)
 * 知乎：[胡椒喵](https://www.zhihu.com/people/kindem)
 * Email: [johnkindem@qq.com](mailto:johnkindem@qq.com)
