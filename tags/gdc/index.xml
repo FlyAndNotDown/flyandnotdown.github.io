@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>GDC on Kindem的博客</title><link>https://www.kindem.xyz/tags/gdc/</link><description>Recent content in GDC on Kindem的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 03 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://www.kindem.xyz/tags/gdc/index.xml" rel="self" type="application/rss+xml"/><item><title>GDC 笔记 - Simulating Tropical Weather in FARCRY6</title><link>https://www.kindem.xyz/post/57/</link><pubDate>Sat, 03 Sep 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/57/</guid><description>FarCry6 的一个分享，热带天气的模拟。
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>GDC on Kindem的博客</title><link>https://flyandnotdown.github.io/tags/gdc/</link><description>Recent content in GDC on Kindem的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 03 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://flyandnotdown.github.io/tags/gdc/index.xml" rel="self" type="application/rss+xml"/><item><title>GDC 笔记 - Simulating Tropical Weather in FARCRY6</title><link>https://flyandnotdown.github.io/post/57/</link><pubDate>Sat, 03 Sep 2022 00:00:00 +0000</pubDate><guid>https://flyandnotdown.github.io/post/57/</guid><description>FarCry6 的一个分享，热带天气的模拟。
 Speakers 的介绍，一个图形程序和一个 TA。
 先介绍下 FarCry6，FarCry 系列大家都比较熟悉了，一直都做的开放世界第一人称射击，每一代 FarCry 的剧情都会在一个不同的环境下展开。这一代故事发生在一个名为雅拉的热带小岛上，雅拉的原型是古巴（现实生活中古巴在美洲加勒比海附近，是一个热带群岛国家，北纬 19-24 度）。
 这一代玩家会扮演一名名为丹尼罗杰斯的本地反叛军，剧情就是推翻独裁者安东和他儿子迭戈的凶暴统治。这里的封面就是安东和迭戈，看过绝命毒师的应该都知道，这张脸的原型就是炸鸡叔，看着就知道是大反派。
@@ -21,13 +21,13 @@ Weather Presets 是项目中可以引用的一系列天气预设，每一个 Wea
 Mist 预设下就能看见一层淡淡的雾。
 Fog 预设下则更明显。
 Light Rain 预设，开始下小雨。
-Moderate Rain 预设，中雨。</description></item><item><title>GDC 笔记 - FidelityFX Super Resolution 2.0</title><link>https://www.kindem.xyz/post/56/</link><pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/56/</guid><description>原文链接：GDC 2022 - FidelityFX Super Resolution 2.0
+Moderate Rain 预设，中雨。</description></item><item><title>GDC 笔记 - FidelityFX Super Resolution 2.0</title><link>https://flyandnotdown.github.io/post/56/</link><pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate><guid>https://flyandnotdown.github.io/post/56/</guid><description>原文链接：GDC 2022 - FidelityFX Super Resolution 2.0
 AMD FSR 2.0 版本，相对 FSR 1.0 架构上有较大改动。
 先回顾下 FSR 1.0，FSR 1.0 推出于 2021 年七月，是 AMD 推出的空间域超分解决方案，高性能，易集成，比价友好的 MIT License，已经在很多游戏中被集成了。
 因为 FSR 1.0 是基于空间域的超分算法，好处就是很容易集成（直接挂在后处理最后就行了），但同时也有一些缺陷：
 FSR 1.0 的输入需要经过高质量的抗锯齿处理，这个问题就算是不考虑超分，也是一个比较头疼的问题，把 FSR 1.0 挂在低质量的 TAA 实现后面就会产生质量很差的输出，这意味着如果游戏没有实现抗锯齿就集成 FSR 1.0，就要花上更多的时间。 超分的质量取决于输入图像的分辨率，如果输入图像的分辨率太低，就没有足够的信息来重现细节，太低的分辨率还会导致一些画面的缺陷，比如闪烁、边缘模糊等，这种情况通常在使用 Performance 模式时出现。 FSR 2.0 是下一代超分解决方案，不再基于空间域，而是基于时空域。FSR 2.0 与 FSR 1.0 并不兼容，需要不同的输入，并且直接内置了抗锯齿。质量要比 1.0 更高，提供了不同的 Quality Mode，同时支持了动态分辨率。跟 FSR 1.0 一样的是开源、跨平台、高度优化，不需要硬件支持的深度学习（内涵 DLSS），以 C++ / HLSL 库的方式提供 API，并且可以随意定制。
 算法介绍。
-FSR 2.0 的输入和 1.0 不再一样，输入为渲染尺寸的 Color、Depth、Motion（像素相比前一帧的位移）。与之对比，FSR 1.</description></item><item><title>GDC 笔记 - Quadtree Displacement Mapping with Height Blending</title><link>https://www.kindem.xyz/post/53/</link><pubDate>Tue, 15 Mar 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/53/</guid><description>原文链接：Quadtree Displacement Mapping with Height Blending
+FSR 2.0 的输入和 1.0 不再一样，输入为渲染尺寸的 Color、Depth、Motion（像素相比前一帧的位移）。与之对比，FSR 1.</description></item><item><title>GDC 笔记 - Quadtree Displacement Mapping with Height Blending</title><link>https://flyandnotdown.github.io/post/53/</link><pubDate>Tue, 15 Mar 2022 00:00:00 +0000</pubDate><guid>https://flyandnotdown.github.io/post/53/</guid><description>原文链接：Quadtree Displacement Mapping with Height Blending
 目录
 下一代渲染的一些要素与目标。
 然而现实是现在的 Surface Rendering 差距甚远。
@@ -41,7 +41,7 @@ Surface Rendering 要实现光照交互依赖 Surface 的微观结构，目前�
 寻找真正的 Surface 的深度，即寻找 View Ray 和 Height Field 的真正交点 通过计算好的 Depth Offset 来进行光照计算 比如上面这张图，在无视高度细节的情况下交点实际上是错误的。
 正确的交点应该是图中虚线和 View Ray 的交点。
 一种做法是对 Height Field 数据做 Ray Tracing，这意味着额外的显存消耗。
-Relief Mapping (RM) 和 Parallax Oclussion Mapping (POM) 都是光追做法。</description></item><item><title>GDC 笔记 - 'Ghost Recon Wildlands': Terrain Tools and Technology</title><link>https://www.kindem.xyz/post/51/</link><pubDate>Mon, 21 Feb 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/51/</guid><description>原文链接：&amp;lsquo;Ghost Recon Wildlands&amp;rsquo;: Terrain Tools and Technology
+Relief Mapping (RM) 和 Parallax Oclussion Mapping (POM) 都是光追做法。</description></item><item><title>GDC 笔记 - 'Ghost Recon Wildlands': Terrain Tools and Technology</title><link>https://flyandnotdown.github.io/post/51/</link><pubDate>Mon, 21 Feb 2022 00:00:00 +0000</pubDate><guid>https://flyandnotdown.github.io/post/51/</guid><description>原文链接：&amp;lsquo;Ghost Recon Wildlands&amp;rsquo;: Terrain Tools and Technology
 地图规格。
 11 种生态群落，140 种地表材质。
 河流面积与顶点。
@@ -61,7 +61,7 @@ GPU 雕刻工具的介绍。
 美术工具截图，修改参数就可以实时生成地表看到效果，非常方便。
 虽然现在可以一键生成地表了，但是有些过渡的地方还是显得不太自然。于是又支持了美术手刷地表。
 地表最终会被保存为两张纹理，分别叫 Splatting Texture (R8) 和 Vista Texture (BC5)，Splatting Texture 中保存了当前地表所对应的材质索引，Vista Texture 保存的是一个简单的 Albedo，用于远处地表的渲染。
-地块是按照四叉树存储的，每一个四叉树节点都带 Payload，包含 LOD、Culling、Streaming 信息。这些节点会根据距离相机的距离进行 Streaming In / Out。</description></item><item><title>GDC 笔记 - Terrain Rendering in 'Far Cry 5'</title><link>https://www.kindem.xyz/post/52/</link><pubDate>Mon, 21 Feb 2022 00:00:00 +0000</pubDate><guid>https://www.kindem.xyz/post/52/</guid><description>原文链接：GDC Vault - Terrain Rendering in &amp;lsquo;Far Cry 5&amp;rsquo;
+地块是按照四叉树存储的，每一个四叉树节点都带 Payload，包含 LOD、Culling、Streaming 信息。这些节点会根据距离相机的距离进行 Streaming In / Out。</description></item><item><title>GDC 笔记 - Terrain Rendering in 'Far Cry 5'</title><link>https://flyandnotdown.github.io/post/52/</link><pubDate>Mon, 21 Feb 2022 00:00:00 +0000</pubDate><guid>https://flyandnotdown.github.io/post/52/</guid><description>原文链接：GDC Vault - Terrain Rendering in &amp;lsquo;Far Cry 5&amp;rsquo;
 地形 Heightfield 渲染。
 地图大小是 10km x 10km，分辨率 0.5m，地形按照四叉树管理，整个地形被划分成 2km x 2km 的地块，这些地块永久可见。
 上面说的 2km x 2km 的地块被按照四叉树划分成很多 Tile，这些 Tile 按照 LOD 以及与玩家的距离进行 Steaming，磁盘上存储的 Tiles 数量上万，但是实际上运行时加载进内存的 Tiles 数量大概在 500 左右。
