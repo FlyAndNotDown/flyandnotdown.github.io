@@ -16,5 +16,8 @@ jobs:
         cache: 'npm'
     - run: npm i -g google-indexing-script
     - run: mkdir ~/.gis
-    - run: echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}" >> ~/.gis/service_account.json
+    - env:
+        GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+      shell: bash
+      run: echo "$GOOGLE_SERVICE_ACCOUNT_JSON" >> ~/.gis/service_account.json
     - run: gis flyandnotdown.github.io
