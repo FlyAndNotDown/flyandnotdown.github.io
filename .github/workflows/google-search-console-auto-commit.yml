@@ -15,4 +15,5 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm i -g google-indexing-script
-    - run: gis flyandnotdown.github.io --client-email ${{ secrets.CLIENT_EMAIL }} --private-key ${{ secrets.PRIVATE_KEY }}
+    - run: echo ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON } >> ~/.gis/service_account.json
+    - run: gis flyandnotdown.github.io
